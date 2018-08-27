@@ -605,10 +605,8 @@ namespace Los_Angeles_Role_Play
                 blocked = true;
             if (GetNumberOfDissimilarFiles() > 0 && blockdissimilarfiles) {
                 blocked = true;
-                // 게임 강제종료
-                KillGameProcess();
                 // 오류 메시지 출력
-                MessageBox.Show("게임 구성 파일이 변조되었습니다.", "알림", MessageBoxButtons.OK, MessageBoxIcon.Stop);
+                alert("게임 구성 파일이 변조되었습니다.", true);
                 // 디버그
                 for (int i = 0; i < GetNumberOfDissimilarFiles(); i++)
                     Debug.Print("DissimilarFiles[" + i + "]: " + GetDissimilarFiles()[i]);
@@ -624,13 +622,7 @@ namespace Los_Angeles_Role_Play
         private bool AntiCheat() {
             FileInfo gtasa = new FileInfo(GetGamePath() + "\\gta_sa.exe");
             if (Math.Round((double)(gtasa.Length / 1000000)) != 14) {
-                // 게임 강제종료
-                KillGameProcess();
-                // 상태 표시
-                PercentageLabel.Text = "GTA:SA 실행 파일이 비정상적입니다.";
-                // 창을 최상단으로
-                this.TopMost = true;
-                this.TopMost = false;
+                alert("GTA:SA 실행 파일이 비정상적입니다.", false);
                 return true;
             }
             return false;
