@@ -66,26 +66,34 @@ namespace Los_Angeles_Role_Play
             Debug.Print("InitLevel - " + InitLevel + " - ");
             switch (InitLevel) {
                 case 0: // 서버 연결 확인
-                    HttpStatusCode statuscode;
+                    HttpWebRequest request;
+                    HttpWebResponse response;
+                    HttpStatusCode[] statuscode = new HttpStatusCode[2];
                     try {
-                        HttpWebRequest request = (HttpWebRequest)WebRequest.Create(new Uri(Program.InfowebURL));
-                        HttpWebResponse response = (HttpWebResponse)request.GetResponse();
-                        statuscode = response.StatusCode;
+                        request = (HttpWebRequest)WebRequest.Create(new Uri(Program.InfowebURL));
+                        response = (HttpWebResponse)request.GetResponse();
+                        statuscode[0] = response.StatusCode;
                         response.Close();
+
+                        request = (HttpWebRequest)WebRequest.Create(new Uri(Program.LauncherURL));
+                        response = (HttpWebResponse)request.GetResponse();
+                        statuscode[1] = response.StatusCode;
+                        response.Close();
+                    } catch {
+                        statuscode[0] = statuscode[1] = HttpStatusCode.NotFound;
                     }
-                    catch {
-                        statuscode = HttpStatusCode.NotFound;
-                    }
-                    if (statuscode != HttpStatusCode.OK) {
+
+                    if (statuscode[0] != HttpStatusCode.OK && statuscode[1] != HttpStatusCode.OK) {
                         PercentageLabel.Text = "서버에 연결할 수 없습니다.";
                         BottomLeftLabel.Text = "InfoWeb";
                         SetBottomLeftLabelFunction(Program.InfowebURL);
                         ShowBottomLabels(2);
                         this.TopMost = true;
                         this.TopMost = false;
-                    }
-                    else
+                    } else {
                         GameStart.Start();
+                    }
+
                     break;
                 case 1: // 게임 구성 파일 변조 검사 및 패치
                     // 비인가 프로그램 차단 (파일 변조 검사 제외)
@@ -339,15 +347,26 @@ namespace Los_Angeles_Role_Play
         }
 
         private void StartUpdate() {
-            // 최신 버전의 Hash를 가져옴
-            Uri url = new Uri(Program.LauncherURL + "/getfilehash.php?name=Los Angeles Role Play.exe");
-            HttpWebRequest request = (HttpWebRequest)WebRequest.Create(url);
-            HttpWebResponse response = (HttpWebResponse)request.GetResponse();
-            HttpStatusCode statuscode = response.StatusCode;
-            string newhash = (new StreamReader(response.GetResponseStream(), Encoding.UTF8)).ReadToEnd().ToUpper();
-            response.Close();
-            // 최신 버전 런처를 확인할 수 없는 경우
-            if (statuscode != HttpStatusCode.OK || newhash == string.Empty) {
+            Uri url;
+            HttpWebRequest request;
+            HttpWebResponse response;
+            HttpStatusCode statuscode;
+            string newhash;
+
+            try {
+                // 최신 버전의 Hash를 가져옴
+                url = new Uri(Program.LauncherURL + "/getfilehash.php?name=Los Angeles Role Play.exe");
+                request = (HttpWebRequest)WebRequest.Create(url);
+                response = (HttpWebResponse)request.GetResponse();
+                statuscode = response.StatusCode;
+                newhash = (new StreamReader(response.GetResponseStream(), Encoding.UTF8)).ReadToEnd().ToUpper();
+                response.Close();
+            } catch {
+                alert("런처 서버에 연결할 수 없습니다.", false);
+                return;
+            }
+            
+            if (statuscode != HttpStatusCode.OK || newhash == string.Empty) { // 최신 버전 런처를 확인할 수 없는 경우
                 PercentageLabel.Text = "최신 버전 런처를 다운로드받으세요.";
                 BottomLeftLabel.Text = "InfoWeb";
                 SetBottomLeftLabelFunction(Program.InfowebURL);
@@ -524,13 +543,23 @@ namespace Los_Angeles_Role_Play
         private string[] DissimilarFiles = new string[30];
 
         private bool CompareMD5OfGameFile(string listurl) {
-            // 서버에 저장된 게임 파일의 목록(Name,Hash)을 가져옴
-            // ex) samp.dll,64add3449fa874e17071c5149892ce07|SAMP\custom.img,8fc7f2ec79402a952d5b896b710b3a41|...
-            Uri url = new Uri(listurl);
-            HttpWebRequest request = (HttpWebRequest)WebRequest.Create(url);
-            HttpWebResponse response = (HttpWebResponse)request.GetResponse();
-            string[] fdata = (new StreamReader(response.GetResponseStream(), Encoding.UTF8)).ReadToEnd().Split('|');
-            response.Close();
+            Uri url;
+            HttpWebRequest request;
+            HttpWebResponse response;
+            string[] fdata;
+
+            try {
+                // 서버에 저장된 게임 파일의 목록(Name,Hash)을 가져옴
+                // ex) samp.dll,64add3449fa874e17071c5149892ce07|SAMP\custom.img,8fc7f2ec79402a952d5b896b710b3a41|...
+                url = new Uri(listurl);
+                request = (HttpWebRequest)WebRequest.Create(url);
+                response = (HttpWebResponse)request.GetResponse();
+                fdata = (new StreamReader(response.GetResponseStream(), Encoding.UTF8)).ReadToEnd().Split('|');
+                response.Close();
+            } catch {
+                alert("런처 서버에 연결할 수 없습니다.", false);
+                return false;
+            }
 
             // DissimilarFiles 초기화
             for (int i = 0; i < DissimilarFiles.Length; i++)
@@ -651,25 +680,28 @@ namespace Los_Angeles_Role_Play
         }
 
         private string GetAuthorizedFilesFromServer(string listurl) {
-            // 서버에 저장된 클레오 파일의 화이트리스트(Name,Hash)을 가져옴
-            Uri url = new Uri(listurl);
-            HttpWebRequest request = (HttpWebRequest)WebRequest.Create(url);
-            
-            HttpWebResponse response = (HttpWebResponse)request.GetResponse();
-            string allowlist = (new StreamReader(response.GetResponseStream(), Encoding.UTF8)).ReadToEnd();
-            if(response.StatusCode != HttpStatusCode.OK) {
-                // 게임 강제종료
-                KillGameProcess();
-                // 상태 표시
-                PercentageLabel.Text = "ACL 정보를 받아오지 못했습니다.";
-                // 창을 최상단에 위치
-                this.TopMost = true;
-                this.TopMost = false;
+            Uri url;
+            HttpWebRequest request;
+            HttpWebResponse response = null;
+            string allowlist = "";
+
+            try {
+                // 서버에 저장된 클레오 파일의 화이트리스트(Name,Hash)을 가져옴
+                url = new Uri(listurl);
+                request = (HttpWebRequest)WebRequest.Create(url);
+                response = (HttpWebResponse)request.GetResponse();
+                allowlist = (new StreamReader(response.GetResponseStream(), Encoding.UTF8)).ReadToEnd();
+
+                if (response.StatusCode != HttpStatusCode.OK) {
+                    alert("ACL 정보를 받아오지 못했습니다.", false);
+                } else {
+                    response.Close();
+                }
+                AuthorizedFiles = allowlist;
+                Debug.Print("허용된 클레오: " + allowlist);
+            } catch {
+                alert("런처 서버에 연결할 수 없습니다.", false);
             }
-            else
-                response.Close();
-            AuthorizedFiles = allowlist;
-            Debug.Print("허용된 클레오: " + allowlist);
             return allowlist;
         }
 
