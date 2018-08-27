@@ -798,6 +798,23 @@ namespace Los_Angeles_Role_Play
         }
         #endregion
 
+        #region  < 경고문 출력 >
+        private void alert(String message, bool showMessageBox) {
+            // 게임 강제종료
+            KillGameProcess();
+            // 출력
+            if (showMessageBox) {
+                MessageBox.Show(message, "알림", MessageBoxButtons.OK, MessageBoxIcon.Stop);
+            } else {
+                PercentageLabel.Text = message;
+            }
+            // 창을 최상단으로
+            this.TopMost = true;
+            this.TopMost = false;
+
+        }
+        #endregion
+
         #region  < Uri Scheme > 
         private void CreateUrlSchemeRegistry()
         {
