@@ -85,7 +85,7 @@ namespace Los_Angeles_Role_Play
 
                     if (statuscode[0] != HttpStatusCode.OK && statuscode[1] != HttpStatusCode.OK) {
                         PercentageLabel.Text = "서버에 연결할 수 없습니다.";
-                        BottomLeftLabel.Text = "InfoWeb";
+                        BottomLeftLabel.Text = "인포웹";
                         SetBottomLeftLabelFunction(Program.InfowebURL);
                         ShowBottomLabels(2);
                         this.TopMost = true;
@@ -127,7 +127,7 @@ namespace Los_Angeles_Role_Play
                     }
                     else if (string.Compare(GetUsername(), "NULL") == 0) {
                         PercentageLabel.Text = "설치 완료. 인포웹을 통해 실행해 주세요.";
-                        BottomLeftLabel.Text = "InfoWeb";
+                        BottomLeftLabel.Text = "인포웹";
                         SetBottomLeftLabelFunction(Program.InfowebURL);
                         ShowBottomLabels(2);
                         this.TopMost = true;
@@ -165,7 +165,7 @@ namespace Los_Angeles_Role_Play
                     PercentageLabel.Text = "챗로그 백업에 실패했습니다!";
                 }
                 // 하단 버튼 설정
-                BottomLeftLabel.Text = "Open";
+                BottomLeftLabel.Text = "열기";
                 SetBottomLeftLabelFunction(Program.Path_ChatLog);
                 ShowBottomLabels(2);
                 this.Show();
@@ -368,7 +368,7 @@ namespace Los_Angeles_Role_Play
             
             if (statuscode != HttpStatusCode.OK || newhash == string.Empty) { // 최신 버전 런처를 확인할 수 없는 경우
                 PercentageLabel.Text = "최신 버전 런처를 다운로드받으세요.";
-                BottomLeftLabel.Text = "InfoWeb";
+                BottomLeftLabel.Text = "인포웹";
                 SetBottomLeftLabelFunction(Program.InfowebURL);
                 ShowBottomLabels(2);
                 this.TopMost = true;
@@ -658,7 +658,7 @@ namespace Los_Angeles_Role_Play
                 // 상태 표시
                 PercentageLabel.Text = "비인증 파일 검출. 다시 실행하세요.";
                 // 하단 버튼 설정
-                BottomLeftLabel.Text = "Open";
+                BottomLeftLabel.Text = "열기";
                 SetBottomLeftLabelFunction(aufpath);
                 ShowBottomLabels(2);
                 // 최상단

@@ -86,7 +86,7 @@
             this.PercentageLabel.Name = "PercentageLabel";
             this.PercentageLabel.Size = new System.Drawing.Size(400, 30);
             this.PercentageLabel.TabIndex = 3;
-            this.PercentageLabel.Text = "Hello!";
+            this.PercentageLabel.Text = "안녕하세요!";
             this.PercentageLabel.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             // 
             // TotalProgressBar_Background
@@ -177,7 +177,7 @@
             this.BottomLabel.Name = "BottomLabel";
             this.BottomLabel.Size = new System.Drawing.Size(498, 35);
             this.BottomLabel.TabIndex = 7;
-            this.BottomLabel.Text = "Exit";
+            this.BottomLabel.Text = string.Empty;
             this.BottomLabel.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             this.BottomLabel.Click += new System.EventHandler(this.BottomLabel_Click);
             this.BottomLabel.MouseDown += new System.Windows.Forms.MouseEventHandler(this.BottomLabel_MouseDown);
@@ -193,7 +193,6 @@
             this.BottomLeftLabel.Name = "BottomLeftLabel";
             this.BottomLeftLabel.Size = new System.Drawing.Size(249, 35);
             this.BottomLeftLabel.TabIndex = 8;
-            this.BottomLeftLabel.Text = "Function";
             this.BottomLeftLabel.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             this.BottomLeftLabel.Visible = false;
             this.BottomLeftLabel.Click += new System.EventHandler(this.ButtomLeftLabel_Click);
@@ -211,7 +210,7 @@
             this.BottomRightLabel.Name = "BottomRightLabel";
             this.BottomRightLabel.Size = new System.Drawing.Size(249, 35);
             this.BottomRightLabel.TabIndex = 9;
-            this.BottomRightLabel.Text = "Exit";
+            this.BottomRightLabel.Text = "종료";
             this.BottomRightLabel.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             this.BottomRightLabel.Visible = false;
             this.BottomRightLabel.Click += new System.EventHandler(this.BottomLabel_Click);
