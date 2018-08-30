@@ -49,7 +49,7 @@ namespace Los_Angeles_Role_Play
                 username = "NULL";
             // 환영 문구
             if(string.Compare(username, "NULL") != 0)
-                PercentageLabel.Text = username + ", Hello!";
+                PercentageLabel.Text = username + "님, 안녕하세요!";
             // 게임 실행
             GameStart.Start();
         }
