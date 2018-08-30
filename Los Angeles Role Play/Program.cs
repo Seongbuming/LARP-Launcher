@@ -10,7 +10,7 @@ namespace Los_Angeles_Role_Play
     static class Program
     {
         public static bool TestMode = false;
-        public static string InfowebURL = "http://status.la-rp.co.kr";
+        public static string InfowebURL = "http://la-rp.co.kr";
         public static string LauncherURL = "http://seongbum.com/LARP/Launcher";
         public static string Path_LARP = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "Los Angeles Role Play");
         public static string Path_ChatLog = Path.Combine(Path_LARP, "챗로그");

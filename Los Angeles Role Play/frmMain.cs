@@ -85,7 +85,7 @@ namespace Los_Angeles_Role_Play
 
                     if (statuscode[0] != HttpStatusCode.OK && statuscode[1] != HttpStatusCode.OK) {
                         PercentageLabel.Text = "서버에 연결할 수 없습니다.";
-                        BottomLeftLabel.Text = "인포웹";
+                        BottomLeftLabel.Text = "포럼";
                         SetBottomLeftLabelFunction(Program.InfowebURL);
                         ShowBottomLabels(2);
                         this.TopMost = true;
@@ -126,8 +126,8 @@ namespace Los_Angeles_Role_Play
                         Application.Exit();
                     }
                     else if (string.Compare(GetUsername(), "NULL") == 0) {
-                        PercentageLabel.Text = "설치 완료. 인포웹을 통해 실행해 주세요.";
-                        BottomLeftLabel.Text = "인포웹";
+                        PercentageLabel.Text = "설치 완료";
+                        BottomLeftLabel.Text = "포럼";
                         SetBottomLeftLabelFunction(Program.InfowebURL);
                         ShowBottomLabels(2);
                         this.TopMost = true;
@@ -368,7 +368,7 @@ namespace Los_Angeles_Role_Play
             
             if (statuscode != HttpStatusCode.OK || newhash == string.Empty) { // 최신 버전 런처를 확인할 수 없는 경우
                 PercentageLabel.Text = "최신 버전 런처를 다운로드받으세요.";
-                BottomLeftLabel.Text = "인포웹";
+                BottomLeftLabel.Text = "포럼";
                 SetBottomLeftLabelFunction(Program.InfowebURL);
                 ShowBottomLabels(2);
                 this.TopMost = true;
