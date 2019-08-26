@@ -160,8 +160,7 @@ namespace Los_Angeles_Role_Play
                         Directory.CreateDirectory(Program.Path_ChatLog);
                     File.Copy(Path.Combine(sampchatlogpath, "chatlog.txt"), larpchatlogfile, true);
                     PercentageLabel.Text = "챗로그가 자동 백업되었습니다.";
-                }
-                catch {
+                } catch {
                     PercentageLabel.Text = "챗로그 백업에 실패했습니다!";
                 }
                 // 하단 버튼 설정
@@ -389,8 +388,7 @@ namespace Los_Angeles_Role_Play
                 try {
                     if (!Directory.Exists(Program.Path_Setup))
                         Directory.CreateDirectory(Program.Path_Setup);
-                }
-                catch { }
+                } catch { }
                 // 대상 지정
                 sUrlToReadFileFrom = Program.LauncherURL + "/Los Angeles Role Play.exe";
                 sFilePathToWriteFileTo = Path.Combine(Program.Path_Setup,
@@ -400,8 +398,7 @@ namespace Los_Angeles_Role_Play
                 try {
                     if (File.Exists(sFilePathToWriteFileTo))
                         File.Delete(sFilePathToWriteFileTo);
-                }
-                catch { }
+                } catch { }
                 // PercentageLabel 동기화
                 PercentageLabel.Text = "최신 런처 설치중";
                 // DownloadWorker 실행
@@ -484,8 +481,7 @@ namespace Los_Angeles_Role_Play
                         streamRemote.Close();
                     }
                 }
-            }
-            catch {
+            } catch {
                 DownloadWorker.CancelAsync();
                 if (string.Compare(sMode, "Patch") == 0)
                     MessageBox.Show(sFileList[sCurrentFileIndex] + " 파일을 다운로드할 수 없습니다.");
@@ -639,7 +635,7 @@ namespace Los_Angeles_Role_Play
                 // 게임 강제종료
                 KillGameProcess();
                 // 안내 메시지 작성
-                string msg = "다음과 같은 파일들이 이동되었습니다.\n";
+                string msg = "다음 파일들이 이동되었습니다.\n";
                 string aufpath = Path.Combine(Program.Path_UAF, DateTime.Now.ToString("yyMMdd-HHmmss"));
                 for (int i = 0; i < auflist.Length; i++) {
                     string aufname = auflist[i].Split(',')[0];
@@ -652,11 +648,10 @@ namespace Los_Angeles_Role_Play
                             Directory.CreateDirectory(aufpath);
                         // 파일 이동
                         File.Move(auf, Path.Combine(aufpath, aufname));
-                    }
-                    catch { }
+                    } catch { }
                 }
                 // 상태 표시
-                PercentageLabel.Text = "비인증 파일 검출. 다시 실행하세요.";
+                PercentageLabel.Text = "비인가 파일 검출. 다시 실행하세요.";
                 // 하단 버튼 설정
                 BottomLeftLabel.Text = "열기";
                 SetBottomLeftLabelFunction(aufpath);
@@ -665,7 +660,7 @@ namespace Los_Angeles_Role_Play
                 this.TopMost = true;
                 this.TopMost = false;
                 // 안내 메시지 출력
-                MessageBox.Show(msg, "비인증 파일 이동 안내", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                MessageBox.Show(msg, "비인가 파일 이동 안내", MessageBoxButtons.OK, MessageBoxIcon.Information);
                 return true;
             }
             return false;
@@ -743,8 +738,7 @@ namespace Los_Angeles_Role_Play
                     return path;
                 else
                     return ShowGamePathDialog();
-            }
-            catch {
+            } catch {
                 return ShowGamePathDialog();
             }
         }
@@ -781,8 +775,7 @@ namespace Los_Angeles_Role_Play
                     for (int i = 0; i < byteResult.Length; i++)
                         strMD5.Append(byteResult[i].ToString("X2"));
                     return strMD5.ToString();
-                }
-                catch {
+                } catch {
                     MessageBox.Show(filepath + " 파일이 실행중입니다.", "오류", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 }*/
                 using (var fs = File.OpenRead(filepath))
@@ -835,7 +828,6 @@ namespace Los_Angeles_Role_Play
             // 창을 최상단으로
             this.TopMost = true;
             this.TopMost = false;
-
         }
         #endregion
 
