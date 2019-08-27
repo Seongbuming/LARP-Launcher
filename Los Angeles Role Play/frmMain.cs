@@ -44,7 +44,7 @@ namespace Los_Angeles_Role_Play
             if (args.Length >= 1)
                 username = args[0].Replace("larp:", string.Empty).Replace("/", string.Empty);
             else if (Program.TestMode)
-                username = "Vladimir_Horowitz";
+                username = "Larp_Tester";
             else
                 username = "NULL";
             // 환영 문구
