@@ -353,7 +353,7 @@ namespace Los_Angeles_Role_Play
             string newhash;
 
             try {
-                // 최신 버전의 Hash를 가져옴
+                // 최신 런처의 Hash를 가져옴
                 url = new Uri(Program.LauncherURL + "/getfilehash.php?name=Los Angeles Role Play.exe");
                 request = (HttpWebRequest)WebRequest.Create(url);
                 response = (HttpWebResponse)request.GetResponse();
@@ -365,8 +365,8 @@ namespace Los_Angeles_Role_Play
                 return;
             }
             
-            if (statuscode != HttpStatusCode.OK || newhash == string.Empty) { // 최신 버전 런처를 확인할 수 없는 경우
-                PercentageLabel.Text = "최신 버전 런처를 다운로드받으세요.";
+            if (statuscode != HttpStatusCode.OK || newhash == string.Empty) { // 최신 런처를 확인할 수 없는 경우
+                PercentageLabel.Text = "최신 버전의 런처를 다운로드받으세요.";
                 BottomLeftLabel.Text = "포럼";
                 SetBottomLeftLabelFunction(Program.InfowebURL);
                 ShowBottomLabels(2);
@@ -616,7 +616,7 @@ namespace Los_Angeles_Role_Play
         }
 
         private bool AntiCheat() {
-            FileInfo gtasa = new FileInfo(GetGamePath() + "\\gta_sa.exe");
+            FileInfo gtasa = new FileInfo(Path.Combine(GetGamePath(), "gta_sa.exe"));
             if (Math.Round((double)(gtasa.Length / 1000000)) != 14) {
                 alert("GTA:SA 실행 파일이 비정상적입니다.", false);
                 return true;
@@ -625,36 +625,39 @@ namespace Los_Angeles_Role_Play
         }
 
         private bool AntiAUF() {
-
-            string[] carr = GetUnauthorizedFiles(GetGamePath());
+            string gamepath = GetGamePath();
+            string[] carr = GetUnauthorizedFiles(gamepath);
             Debug.Print("AUF: " + carr[0]);
             Debug.Print("DIR: " + carr[1]);
             string[] auflist = carr[0].Split('|');
             string[] dirlist = carr[1].Split('|');
+
             if (carr[0].Length > 0 && auflist.Length > 0) {
                 // 게임 강제종료
                 KillGameProcess();
                 // 안내 메시지 작성
                 string msg = "다음 파일들이 이동되었습니다.\n";
-                string aufpath = Path.Combine(Program.Path_UAF, DateTime.Now.ToString("yyMMdd-HHmmss"));
+                string aufcontainer = Path.Combine(Program.Path_UAF, DateTime.Now.ToString("yyMMdd HHmmss"));
                 for (int i = 0; i < auflist.Length; i++) {
-                    string aufname = auflist[i].Split(',')[0];
-                    string auf = Path.Combine(dirlist[i], aufname);
-                    msg += auf + "\n";
+                    string aufname = auflist[i].Split(',')[0]; // 파일 이름
+                    string orgpath = Path.Combine(dirlist[i], aufname); // 원본 경로
+                    string relativepath = Regex.Replace(dirlist[i].Substring(gamepath.Length), @"^\\", ""); // 상대 경로
+                    string movepath = Path.Combine(aufcontainer, relativepath, aufname); // 이동 경로
+                    msg += orgpath + "\n";
 
                     try {
                         // 폴더 생성
-                        if (!Directory.Exists(aufpath))
-                            Directory.CreateDirectory(aufpath);
+                        if (!Directory.Exists(Path.GetDirectoryName(movepath)))
+                            Directory.CreateDirectory(Path.GetDirectoryName(movepath));
                         // 파일 이동
-                        File.Move(auf, Path.Combine(aufpath, aufname));
+                        File.Move(orgpath, movepath);
                     } catch { }
                 }
                 // 상태 표시
                 PercentageLabel.Text = "비인가 파일 검출. 다시 실행하세요.";
                 // 하단 버튼 설정
-                BottomLeftLabel.Text = "열기";
-                SetBottomLeftLabelFunction(aufpath);
+                BottomLeftLabel.Text = "보기";
+                SetBottomLeftLabelFunction(aufcontainer);
                 ShowBottomLabels(2);
                 // 최상단
                 this.TopMost = true;
@@ -696,7 +699,7 @@ namespace Los_Angeles_Role_Play
             return AuthorizedFiles;
         }
 
-        private string[] GetUnauthorizedFiles( string path) {
+        private string[] GetUnauthorizedFiles(string path) {
             string uaflist = string.Empty;
             string dirlist = string.Empty;
             string allowlist = GetAuthorizedFiles();
@@ -733,7 +736,7 @@ namespace Los_Angeles_Role_Play
                 RegistryKey reg = Registry.CurrentUser.OpenSubKey(@"Software\SAMP");
                 // C:\...\gta_sa.exe 형식의 문자열 중 경로만 반환
                 string file = reg.GetValue("gta_sa_exe").ToString();
-                string path = Regex.Split(file, "gta_sa.exe")[0];
+                string path = Path.GetDirectoryName(file);
                 if (File.Exists(file))
                     return path;
                 else
