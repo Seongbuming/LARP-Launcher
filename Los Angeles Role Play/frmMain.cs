@@ -354,7 +354,7 @@ namespace Los_Angeles_Role_Play
 
             try {
                 // 최신 런처의 Hash를 가져옴
-                url = new Uri(Program.LauncherURL + "/getfilehash.php?name=Los Angeles Role Play.exe");
+                url = new Uri(Program.LauncherURL + "/getfilehash.php?name=" + Program.LauncherFileName);
                 request = (HttpWebRequest)WebRequest.Create(url);
                 response = (HttpWebResponse)request.GetResponse();
                 statuscode = response.StatusCode;
@@ -377,7 +377,7 @@ namespace Los_Angeles_Role_Play
             // 현재 버전의 Hash를 가져옴
             string ehash = GetMD5OfFile(Application.ExecutablePath).ToUpper();
 
-            int ismm = string.Compare(Application.ExecutablePath, Path.Combine(Program.Path_Setup, "Los Angeles Role Play.exe"), true);
+            int ismm = string.Compare(Application.ExecutablePath, Path.Combine(Program.Path_Setup, Program.LauncherFileName), true);
             if (string.Compare(newhash, ehash, true) == 0 && ismm == 0)
                 GameStart.Start();
             else {
@@ -390,9 +390,9 @@ namespace Los_Angeles_Role_Play
                         Directory.CreateDirectory(Program.Path_Setup);
                 } catch { }
                 // 대상 지정
-                sUrlToReadFileFrom = Program.LauncherURL + "/Los Angeles Role Play.exe";
+                sUrlToReadFileFrom = Program.LauncherURL + "/" + Program.LauncherFileName;
                 sFilePathToWriteFileTo = Path.Combine(Program.Path_Setup,
-                    (ismm == 0)? "Los Angeles Role Play Updater.exe": "Los Angeles Role Play.exe");
+                    (ismm == 0)? Program.UpdaterFileName : Program.LauncherFileName);
                 NewLauncherPath = sFilePathToWriteFileTo;
                 // 파일이 이미 존재할 시 삭제
                 try {
@@ -840,10 +840,10 @@ namespace Los_Angeles_Role_Play
             // HKEY_CLASSES_ROOT 하위키 생성 및 읽기/쓰기 권한으로 염
             RegistryKey reg;
             reg = Registry.ClassesRoot.CreateSubKey("larp", RegistryKeyPermissionCheck.ReadWriteSubTree);
-            reg.SetValue("", "Los Angeles Role Play");
+            reg.SetValue("", "LARP Launcher");
             reg.SetValue("Url Protocol", "");
             reg = reg.CreateSubKey(@"shell\open\command", RegistryKeyPermissionCheck.ReadWriteSubTree);
-            reg.SetValue("", "\"" + Path.Combine(Program.Path_Setup, "Los Angeles Role Play.exe") + "\"" + " \"%1\"");
+            reg.SetValue("", "\"" + Path.Combine(Program.Path_Setup, Program.LauncherFileName) + "\"" + " \"%1\"");
         }
         #endregion
 
