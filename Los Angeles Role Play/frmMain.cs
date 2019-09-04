@@ -613,6 +613,9 @@ namespace Los_Angeles_Role_Play
             if (blocked) {
                 // 게임 강제종료
                 KillGameProcess();
+                // 하단 버튼 설정
+                BottomLabel.Text = "종료";
+                ShowBottomLabels(1);
                 return true;
             }
             return false;
@@ -735,31 +738,39 @@ namespace Los_Angeles_Role_Play
 
         #region  < 게임 경로 탐색 > 
         private string GetGamePath() {
+            string file = string.Empty;
+            string path = string.Empty;
+
             try {
                 RegistryKey reg = Registry.CurrentUser.OpenSubKey(@"Software\SAMP");
                 // C:\...\gta_sa.exe 형식의 문자열 중 경로만 반환
-                string file = reg.GetValue("gta_sa_exe").ToString();
-                string path = Path.GetDirectoryName(file);
-                if (File.Exists(file))
-                    return path;
-                else
-                    return ShowGamePathDialog();
+                file = reg.GetValue("gta_sa_exe").ToString();
+                path = Path.GetDirectoryName(file);
+                if (!File.Exists(file))
+                    path = ShowGamePathDialog();
             } catch {
-                return ShowGamePathDialog();
+                path = ShowGamePathDialog();
             }
+
+            if (path.Length == 0) {
+                KillGameProcess();
+                Application.Exit();
+            }
+
+            return path;
         }
 
         private string ShowGamePathDialog() {
             // 파일 열기 Dialog
             OpenFileDialog dialog = new OpenFileDialog();
             dialog.Title = "GTA San Andreas 실행 파일을 지정해 주세요.";
-            dialog.Filter = "GTA San Andreas|gta_sa.exe";
+            dialog.Filter = "GTA San Andreas (gta_sa.exe)|gta_sa.exe";
 
             // 다이아로그를 출력하며 취소 버튼 클릭 시 프로그램 종료
             if (dialog.ShowDialog() == DialogResult.Cancel) {
                 KillGameProcess();
                 Application.Exit();
-                return "";
+                return string.Empty;
             }
 
             // gta_sa.exe 경로를 레지스트리에 입력
