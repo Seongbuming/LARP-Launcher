@@ -842,7 +842,7 @@ namespace Los_Angeles_Role_Play
         {
             // HKEY_CLASSES_ROOT 하위키 생성 및 읽기/쓰기 권한으로 염
             RegistryKey reg;
-            reg = Registry.ClassesRoot.CreateSubKey("larp", RegistryKeyPermissionCheck.ReadWriteSubTree);
+            reg = Registry.ClassesRoot.CreateSubKey("LARP", RegistryKeyPermissionCheck.ReadWriteSubTree);
             reg.SetValue("", "LARP Launcher");
             reg.SetValue("Url Protocol", "");
             reg = reg.CreateSubKey(@"shell\open\command", RegistryKeyPermissionCheck.ReadWriteSubTree);
