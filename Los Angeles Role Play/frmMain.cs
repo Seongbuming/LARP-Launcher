@@ -46,9 +46,9 @@ namespace Los_Angeles_Role_Play
             else if (Program.TestMode)
                 username = "Larp_Tester";
             else
-                username = "NULL";
+                username = string.Empty;
             // 환영 문구
-            if(string.Compare(username, "NULL") != 0)
+            if (username.Length > 0)
                 PercentageLabel.Text = username + "님, 안녕하세요!";
             // 게임 실행
             GameStart.Start();
@@ -374,13 +374,16 @@ namespace Los_Angeles_Role_Play
                 this.TopMost = false;
                 return;
             }
+            
             // 현재 버전의 Hash를 가져옴
             string ehash = GetMD5OfFile(Application.ExecutablePath).ToUpper();
-
+            
+            // 런처로 실행되었는지 여부
             int ismm = string.Compare(Application.ExecutablePath, Path.Combine(Program.Path_Setup, Program.LauncherFileName), true);
-            if (string.Compare(newhash, ehash, true) == 0 && ismm == 0)
+            
+            if (string.Compare(newhash, ehash, true) == 0 && ismm == 0) // 런처가 최신 버전인 경우
                 GameStart.Start();
-            else {
+            else { // 런처 업데이트가 필요한 경우
                 // Progress Bar 설정
                 SetProgressBar(0, 0);
                 SetProgressBar(1, 50);
