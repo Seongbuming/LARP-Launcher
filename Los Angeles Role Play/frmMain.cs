@@ -623,7 +623,8 @@ namespace Los_Angeles_Role_Play
 
         private bool AntiCheat() {
             FileInfo gtasa = new FileInfo(Path.Combine(GetGamePath(), "gta_sa.exe"));
-            if (Math.Round((double)(gtasa.Length / 1000000)) != 14) {
+            double filesize = Math.Round((double)(gtasa.Length / 1000000));
+            if (filesize < 13 || filesize > 15) {
                 alert("GTA:SA 실행 파일이 비정상적입니다.", false);
                 return true;
             }
