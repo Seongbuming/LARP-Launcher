@@ -95,7 +95,10 @@ namespace Los_Angeles_Role_Play
                     }
 
                     break;
-                case 1: // 게임 구성 파일 변조 검사 및 패치
+                case 1: // 런처 업데이트
+                    StartUpdate();
+                    break;
+                case 2: // 게임 구성 파일 변조 검사 및 패치
                     // 비인가 프로그램 차단 (파일 변조 검사 제외)
                     GetAuthorizedFilesFromServer(Program.LauncherURL + "/getfilelist.php?type=AllowedFiles");
                     if (BlockUnauthorizedPrograms())
@@ -106,9 +109,6 @@ namespace Los_Angeles_Role_Play
                     else
                         // 게임 실행 단계 진행
                         GameStart.Start();
-                    break;
-                case 2: // 런처 업데이트
-                    StartUpdate();
                     break;
                 case 3: // 게임 실행
                     // 비인가 프로그램 차단 (파일 변조 검사 포함)
@@ -568,8 +568,8 @@ namespace Los_Angeles_Role_Play
             int dcount = 0;
             for (int i = 0; i < fdata.Length; i++) {
                 string[] sdata = fdata[i].Split(',');
-                if (GetMD5OfFile(GetGamePath() + "\\" + sdata[0]).ToUpper() != sdata[1].ToUpper()) {
-                    Debug.Print("<DF> " + sdata[0] + ": " + GetMD5OfFile(GetGamePath() + "\\" + sdata[0]).ToUpper());
+                if (GetMD5OfFile(Path.Combine(GetGamePath(), sdata[0])).ToUpper() != sdata[1].ToUpper()) {
+                    Debug.Print("<DF> " + sdata[0] + ": " + GetMD5OfFile(Path.Combine(GetGamePath(), sdata[0])).ToUpper());
                     DissimilarFiles[dcount] = sdata[0];
                     dcount++;
                 }
