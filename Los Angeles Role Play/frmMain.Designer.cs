@@ -39,7 +39,7 @@
             this.TopPanel = new System.Windows.Forms.Panel();
             this.LeftPanel = new System.Windows.Forms.Panel();
             this.RightPanel = new System.Windows.Forms.Panel();
-            this.panel1 = new System.Windows.Forms.Panel();
+            this.BottomPanel = new System.Windows.Forms.Panel();
             this.HeadLabel = new System.Windows.Forms.Label();
             this.AntiCleoWorker = new System.ComponentModel.BackgroundWorker();
             this.GameStart = new System.Windows.Forms.Timer(this.components);
@@ -80,7 +80,7 @@
             // PercentageLabel
             // 
             this.PercentageLabel.BackColor = System.Drawing.Color.Transparent;
-            this.PercentageLabel.Font = new System.Drawing.Font("맑은 고딕 Semilight", 15.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(129)));
+            this.PercentageLabel.Font = new System.Drawing.Font("Malgun Gothic Semilight", 15.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(129)));
             this.PercentageLabel.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(100)))), ((int)(((byte)(100)))), ((int)(((byte)(100)))));
             this.PercentageLabel.Location = new System.Drawing.Point(50, 96);
             this.PercentageLabel.Name = "PercentageLabel";
@@ -134,20 +134,20 @@
             this.RightPanel.Size = new System.Drawing.Size(1, 209);
             this.RightPanel.TabIndex = 0;
             // 
-            // panel1
+            // BottomPanel
             // 
-            this.panel1.BackColor = System.Drawing.Color.DodgerBlue;
-            this.panel1.Dock = System.Windows.Forms.DockStyle.Bottom;
-            this.panel1.Location = new System.Drawing.Point(1, 209);
-            this.panel1.Name = "panel1";
-            this.panel1.Size = new System.Drawing.Size(498, 1);
-            this.panel1.TabIndex = 5;
+            this.BottomPanel.BackColor = System.Drawing.Color.DodgerBlue;
+            this.BottomPanel.Dock = System.Windows.Forms.DockStyle.Bottom;
+            this.BottomPanel.Location = new System.Drawing.Point(1, 209);
+            this.BottomPanel.Name = "BottomPanel";
+            this.BottomPanel.Size = new System.Drawing.Size(498, 1);
+            this.BottomPanel.TabIndex = 5;
             // 
             // HeadLabel
             // 
             this.HeadLabel.BackColor = System.Drawing.Color.Transparent;
             this.HeadLabel.Dock = System.Windows.Forms.DockStyle.Top;
-            this.HeadLabel.Font = new System.Drawing.Font("맑은 고딕", 18F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(129)));
+            this.HeadLabel.Font = new System.Drawing.Font("Malgun Gothic", 18F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(129)));
             this.HeadLabel.ForeColor = System.Drawing.SystemColors.ActiveCaption;
             this.HeadLabel.Location = new System.Drawing.Point(1, 1);
             this.HeadLabel.Name = "HeadLabel";
@@ -171,13 +171,12 @@
             // 
             this.BottomLabel.BackColor = System.Drawing.Color.AliceBlue;
             this.BottomLabel.Dock = System.Windows.Forms.DockStyle.Bottom;
-            this.BottomLabel.Font = new System.Drawing.Font("맑은 고딕", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(129)));
+            this.BottomLabel.Font = new System.Drawing.Font("Malgun Gothic", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(129)));
             this.BottomLabel.ForeColor = System.Drawing.Color.SteelBlue;
             this.BottomLabel.Location = new System.Drawing.Point(1, 174);
             this.BottomLabel.Name = "BottomLabel";
             this.BottomLabel.Size = new System.Drawing.Size(498, 35);
             this.BottomLabel.TabIndex = 7;
-            this.BottomLabel.Text = string.Empty;
             this.BottomLabel.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             this.BottomLabel.Click += new System.EventHandler(this.BottomLabel_Click);
             this.BottomLabel.MouseDown += new System.Windows.Forms.MouseEventHandler(this.BottomLabel_MouseDown);
@@ -204,7 +203,7 @@
             // BottomRightLabel
             // 
             this.BottomRightLabel.BackColor = System.Drawing.Color.AliceBlue;
-            this.BottomRightLabel.Font = new System.Drawing.Font("맑은 고딕", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(129)));
+            this.BottomRightLabel.Font = new System.Drawing.Font("Malgun Gothic", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(129)));
             this.BottomRightLabel.ForeColor = System.Drawing.Color.SteelBlue;
             this.BottomRightLabel.Location = new System.Drawing.Point(250, 174);
             this.BottomRightLabel.Name = "BottomRightLabel";
@@ -228,7 +227,7 @@
             this.Controls.Add(this.BottomLeftLabel);
             this.Controls.Add(this.BottomLabel);
             this.Controls.Add(this.HeadLabel);
-            this.Controls.Add(this.panel1);
+            this.Controls.Add(this.BottomPanel);
             this.Controls.Add(this.RightPanel);
             this.Controls.Add(this.LeftPanel);
             this.Controls.Add(this.TotalProgressBar_Background);
@@ -236,7 +235,7 @@
             this.Controls.Add(this.UnitProgressBar_Background);
             this.Controls.Add(this.TopPanel);
             this.DoubleBuffered = true;
-            this.Font = new System.Drawing.Font("맑은 고딕", 11.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(129)));
+            this.Font = new System.Drawing.Font("Malgun Gothic", 11.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(129)));
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.None;
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Name = "frmMain";
@@ -256,7 +255,7 @@
         private System.Windows.Forms.Panel TopPanel;
         private System.Windows.Forms.Panel LeftPanel;
         private System.Windows.Forms.Panel RightPanel;
-        private System.Windows.Forms.Panel panel1;
+        private System.Windows.Forms.Panel BottomPanel;
         private System.Windows.Forms.Label HeadLabel;
         private System.Windows.Forms.Panel TotalProgressBar;
         private System.ComponentModel.BackgroundWorker AntiCleoWorker;
