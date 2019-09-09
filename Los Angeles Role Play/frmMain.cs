@@ -35,7 +35,7 @@ namespace Los_Angeles_Role_Play
         #region  < Initialize > 
         int InitLevel = 0;
         int ExitLevel = 0;
-        string username;
+        string username = string.Empty;
 
         public frmMain(string[] args) {
             InitializeComponent();
@@ -47,16 +47,56 @@ namespace Los_Angeles_Role_Play
             else if (Program.TestMode)
                 username = "Larp_Tester";
             else
-                username = string.Empty;
-            // 환영 문구
-            if (username.Length > 0)
+                LoadUsernameFromRegistry();
+
+            if (username.Length > 0) {
                 PercentageLabel.Text = username + "님, 안녕하세요!";
-            // 게임 실행
-            GameStart.Start();
+                // Url Scheme으로 실행 시 바로 게임 실행
+                if (args.Length >= 1) {
+                    StartGame();
+                    return;
+                }
+            } else {
+                PercentageLabel.Text = "닉네임을 설정해 주세요.";
+            }
+
+            Button_3_1.Text = "게임실행";
+            Button_3_2.Text = "닉네임 설정";
+            Button_3_3.Text = "종료";
+            SetButtonEvent(Button_3_1, ButtonEvent_GameStart);
+            SetButtonEvent(Button_3_2, ButtonEvent_SetNickname);
+            SetButtonEvent(Button_3_3, Application.Exit);
+            ShowButtons(3);
         }
 
-        public string GetUsername() {
+        private string GetUsername() {
             return username;
+        }
+
+        private void SetUsername(string name) {
+            username = name;
+
+            if (username.Length > 0) {
+                PercentageLabel.Text = username + "님, 안녕하세요!";
+            } else {
+                PercentageLabel.Text = "닉네임을 설정해 주세요.";
+            }
+        }
+
+        private void LoadUsernameFromRegistry() {
+            try {
+                RegistryKey reg = Registry.CurrentUser.OpenSubKey(@"Software\SAMP");
+                username = reg.GetValue("PlayerName").ToString();
+            } catch {
+                username = string.Empty;
+            }
+        }
+
+        private void SaveUsernameToRegistry() {
+            try {
+                RegistryKey reg = Registry.CurrentUser.CreateSubKey(@"Software\SAMP", RegistryKeyPermissionCheck.ReadWriteSubTree);
+                reg.SetValue("PlayerName", username);
+            } catch { }
         }
         #endregion
 
@@ -118,8 +158,7 @@ namespace Los_Angeles_Role_Play
                     if (BlockUnauthorizedPrograms())
                         return;
                     // 닉네임 레지스트리 동기화
-                    RegistryKey reg = Registry.CurrentUser.CreateSubKey(@"Software\SAMP", RegistryKeyPermissionCheck.ReadWriteSubTree);
-                    reg.SetValue("PlayerName", GetUsername());
+                    SaveUsernameToRegistry();
 
                     if (GetNewLauncherPath() != String.Empty) {
                         // URL Scheme
@@ -178,6 +217,11 @@ namespace Los_Angeles_Role_Play
                 this.TopMost = true;
                 this.TopMost = false;
             }
+        }
+
+        private void StartGame() {
+            InitLevel = 0;
+            GameStart.Start();
         }
         #endregion
 
@@ -259,6 +303,19 @@ namespace Los_Angeles_Role_Play
 
         private void ButtonEvent_OpenPath(string path) {
             Process.Start(path);
+        }
+
+        private void ButtonEvent_GameStart() {
+            if (GetUsername().Length == 0) {
+                MessageBox.Show("닉네임을 설정하셔야 게임을 시작할 수 있습니다.");
+            } else {
+                StartGame();
+            }
+        }
+
+        private void ButtonEvent_SetNickname() {
+            string name = Microsoft.VisualBasic.Interaction.InputBox("사용하실 닉네임을 입력하세요.", "닉네임 설정");
+            SetUsername(name);
         }
 
         private void Button_MouseEnter(object sender, EventArgs e) {
