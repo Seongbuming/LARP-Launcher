@@ -38,17 +38,26 @@
             this.TotalProgressBar = new System.Windows.Forms.Panel();
             this.TopPanel = new System.Windows.Forms.Panel();
             this.LeftPanel = new System.Windows.Forms.Panel();
+            this.ButtonContainer2 = new System.Windows.Forms.Panel();
+            this.Button_2_1 = new System.Windows.Forms.Label();
+            this.Button_2_2 = new System.Windows.Forms.Label();
             this.RightPanel = new System.Windows.Forms.Panel();
             this.BottomPanel = new System.Windows.Forms.Panel();
             this.HeadLabel = new System.Windows.Forms.Label();
             this.AntiCleoWorker = new System.ComponentModel.BackgroundWorker();
             this.GameStart = new System.Windows.Forms.Timer(this.components);
             this.GameExit = new System.Windows.Forms.Timer(this.components);
-            this.BottomLabel = new System.Windows.Forms.Label();
-            this.BottomLeftLabel = new System.Windows.Forms.Label();
-            this.BottomRightLabel = new System.Windows.Forms.Label();
+            this.Button_1_1 = new System.Windows.Forms.Label();
+            this.ButtonContainer1 = new System.Windows.Forms.Panel();
+            this.ButtonContainer3 = new System.Windows.Forms.Panel();
+            this.Button_3_2 = new System.Windows.Forms.Label();
+            this.Button_3_1 = new System.Windows.Forms.Label();
+            this.Button_3_3 = new System.Windows.Forms.Label();
             this.UnitProgressBar_Background.SuspendLayout();
             this.TotalProgressBar_Background.SuspendLayout();
+            this.ButtonContainer2.SuspendLayout();
+            this.ButtonContainer1.SuspendLayout();
+            this.ButtonContainer3.SuspendLayout();
             this.SuspendLayout();
             // 
             // DownloadWorker
@@ -125,6 +134,48 @@
             this.LeftPanel.Size = new System.Drawing.Size(1, 209);
             this.LeftPanel.TabIndex = 4;
             // 
+            // ButtonContainer2
+            // 
+            this.ButtonContainer2.Controls.Add(this.Button_2_1);
+            this.ButtonContainer2.Controls.Add(this.Button_2_2);
+            this.ButtonContainer2.Location = new System.Drawing.Point(1, 174);
+            this.ButtonContainer2.Name = "ButtonContainer2";
+            this.ButtonContainer2.Size = new System.Drawing.Size(498, 35);
+            this.ButtonContainer2.TabIndex = 9;
+            this.ButtonContainer2.Visible = false;
+            // 
+            // Button_2_1
+            // 
+            this.Button_2_1.BackColor = System.Drawing.Color.AliceBlue;
+            this.Button_2_1.Dock = System.Windows.Forms.DockStyle.Left;
+            this.Button_2_1.ForeColor = System.Drawing.Color.SteelBlue;
+            this.Button_2_1.Location = new System.Drawing.Point(0, 0);
+            this.Button_2_1.Name = "Button_2_1";
+            this.Button_2_1.Size = new System.Drawing.Size(249, 35);
+            this.Button_2_1.TabIndex = 8;
+            this.Button_2_1.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+            this.Button_2_1.MouseDown += new System.Windows.Forms.MouseEventHandler(this.Button_MouseDown);
+            this.Button_2_1.MouseEnter += new System.EventHandler(this.Button_MouseEnter);
+            this.Button_2_1.MouseLeave += new System.EventHandler(this.Button_MouseLeave);
+            this.Button_2_1.MouseUp += new System.Windows.Forms.MouseEventHandler(this.Button_MouseUp);
+            // 
+            // Button_2_2
+            // 
+            this.Button_2_2.BackColor = System.Drawing.Color.AliceBlue;
+            this.Button_2_2.Dock = System.Windows.Forms.DockStyle.Right;
+            this.Button_2_2.Font = new System.Drawing.Font("Malgun Gothic", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(129)));
+            this.Button_2_2.ForeColor = System.Drawing.Color.SteelBlue;
+            this.Button_2_2.Location = new System.Drawing.Point(249, 0);
+            this.Button_2_2.Name = "Button_2_2";
+            this.Button_2_2.Size = new System.Drawing.Size(249, 35);
+            this.Button_2_2.TabIndex = 9;
+            this.Button_2_2.Text = "종료";
+            this.Button_2_2.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+            this.Button_2_2.MouseDown += new System.Windows.Forms.MouseEventHandler(this.Button_MouseDown);
+            this.Button_2_2.MouseEnter += new System.EventHandler(this.Button_MouseEnter);
+            this.Button_2_2.MouseLeave += new System.EventHandler(this.Button_MouseLeave);
+            this.Button_2_2.MouseUp += new System.Windows.Forms.MouseEventHandler(this.Button_MouseUp);
+            // 
             // RightPanel
             // 
             this.RightPanel.BackColor = System.Drawing.Color.DodgerBlue;
@@ -167,65 +218,97 @@
             this.GameExit.Interval = 1000;
             this.GameExit.Tick += new System.EventHandler(this.GameExit_Tick);
             // 
-            // BottomLabel
+            // Button_1_1
             // 
-            this.BottomLabel.BackColor = System.Drawing.Color.AliceBlue;
-            this.BottomLabel.Dock = System.Windows.Forms.DockStyle.Bottom;
-            this.BottomLabel.Font = new System.Drawing.Font("Malgun Gothic", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(129)));
-            this.BottomLabel.ForeColor = System.Drawing.Color.SteelBlue;
-            this.BottomLabel.Location = new System.Drawing.Point(1, 174);
-            this.BottomLabel.Name = "BottomLabel";
-            this.BottomLabel.Size = new System.Drawing.Size(498, 35);
-            this.BottomLabel.TabIndex = 7;
-            this.BottomLabel.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
-            this.BottomLabel.Click += new System.EventHandler(this.BottomLabel_Click);
-            this.BottomLabel.MouseDown += new System.Windows.Forms.MouseEventHandler(this.BottomLabel_MouseDown);
-            this.BottomLabel.MouseEnter += new System.EventHandler(this.BottomLabel_MouseEnter);
-            this.BottomLabel.MouseLeave += new System.EventHandler(this.BottomLabel_MouseLeave);
-            this.BottomLabel.MouseUp += new System.Windows.Forms.MouseEventHandler(this.BottomLabel_MouseUp);
+            this.Button_1_1.BackColor = System.Drawing.Color.AliceBlue;
+            this.Button_1_1.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.Button_1_1.Font = new System.Drawing.Font("Malgun Gothic", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(129)));
+            this.Button_1_1.ForeColor = System.Drawing.Color.SteelBlue;
+            this.Button_1_1.Location = new System.Drawing.Point(0, 0);
+            this.Button_1_1.Name = "Button_1_1";
+            this.Button_1_1.Size = new System.Drawing.Size(498, 35);
+            this.Button_1_1.TabIndex = 7;
+            this.Button_1_1.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+            this.Button_1_1.MouseDown += new System.Windows.Forms.MouseEventHandler(this.Button_MouseDown);
+            this.Button_1_1.MouseEnter += new System.EventHandler(this.Button_MouseEnter);
+            this.Button_1_1.MouseLeave += new System.EventHandler(this.Button_MouseLeave);
+            this.Button_1_1.MouseUp += new System.Windows.Forms.MouseEventHandler(this.Button_MouseUp);
             // 
-            // BottomLeftLabel
+            // ButtonContainer1
             // 
-            this.BottomLeftLabel.BackColor = System.Drawing.Color.AliceBlue;
-            this.BottomLeftLabel.ForeColor = System.Drawing.Color.SteelBlue;
-            this.BottomLeftLabel.Location = new System.Drawing.Point(1, 174);
-            this.BottomLeftLabel.Name = "BottomLeftLabel";
-            this.BottomLeftLabel.Size = new System.Drawing.Size(249, 35);
-            this.BottomLeftLabel.TabIndex = 8;
-            this.BottomLeftLabel.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
-            this.BottomLeftLabel.Visible = false;
-            this.BottomLeftLabel.Click += new System.EventHandler(this.ButtomLeftLabel_Click);
-            this.BottomLeftLabel.MouseDown += new System.Windows.Forms.MouseEventHandler(this.BottomLeftLabel_MouseDown);
-            this.BottomLeftLabel.MouseEnter += new System.EventHandler(this.BottomLeftLabel_MouseEnter);
-            this.BottomLeftLabel.MouseLeave += new System.EventHandler(this.BottomLeftLabel_MouseLeave);
-            this.BottomLeftLabel.MouseUp += new System.Windows.Forms.MouseEventHandler(this.BottomLeftLabel_MouseUp);
+            this.ButtonContainer1.Controls.Add(this.Button_1_1);
+            this.ButtonContainer1.Location = new System.Drawing.Point(1, 174);
+            this.ButtonContainer1.Name = "ButtonContainer1";
+            this.ButtonContainer1.Size = new System.Drawing.Size(498, 35);
+            this.ButtonContainer1.TabIndex = 8;
+            this.ButtonContainer1.Visible = false;
             // 
-            // BottomRightLabel
+            // ButtonContainer3
             // 
-            this.BottomRightLabel.BackColor = System.Drawing.Color.AliceBlue;
-            this.BottomRightLabel.Font = new System.Drawing.Font("Malgun Gothic", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(129)));
-            this.BottomRightLabel.ForeColor = System.Drawing.Color.SteelBlue;
-            this.BottomRightLabel.Location = new System.Drawing.Point(250, 174);
-            this.BottomRightLabel.Name = "BottomRightLabel";
-            this.BottomRightLabel.Size = new System.Drawing.Size(249, 35);
-            this.BottomRightLabel.TabIndex = 9;
-            this.BottomRightLabel.Text = "종료";
-            this.BottomRightLabel.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
-            this.BottomRightLabel.Visible = false;
-            this.BottomRightLabel.Click += new System.EventHandler(this.BottomLabel_Click);
-            this.BottomRightLabel.MouseDown += new System.Windows.Forms.MouseEventHandler(this.BottomRightLabel_MouseDown);
-            this.BottomRightLabel.MouseEnter += new System.EventHandler(this.BottomRightLabel_MouseEnter);
-            this.BottomRightLabel.MouseLeave += new System.EventHandler(this.BottomRightLabel_MouseLeave);
-            this.BottomRightLabel.MouseUp += new System.Windows.Forms.MouseEventHandler(this.BottomRightLabel_MouseUp);
+            this.ButtonContainer3.Controls.Add(this.Button_3_2);
+            this.ButtonContainer3.Controls.Add(this.Button_3_1);
+            this.ButtonContainer3.Controls.Add(this.Button_3_3);
+            this.ButtonContainer3.Location = new System.Drawing.Point(1, 174);
+            this.ButtonContainer3.Name = "ButtonContainer3";
+            this.ButtonContainer3.Size = new System.Drawing.Size(498, 35);
+            this.ButtonContainer3.TabIndex = 10;
+            this.ButtonContainer3.Visible = false;
+            // 
+            // Button_3_2
+            // 
+            this.Button_3_2.BackColor = System.Drawing.Color.AliceBlue;
+            this.Button_3_2.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.Button_3_2.ForeColor = System.Drawing.Color.SteelBlue;
+            this.Button_3_2.Location = new System.Drawing.Point(166, 0);
+            this.Button_3_2.Name = "Button_3_2";
+            this.Button_3_2.Size = new System.Drawing.Size(166, 35);
+            this.Button_3_2.TabIndex = 9;
+            this.Button_3_2.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+            this.Button_3_2.MouseDown += new System.Windows.Forms.MouseEventHandler(this.Button_MouseDown);
+            this.Button_3_2.MouseEnter += new System.EventHandler(this.Button_MouseEnter);
+            this.Button_3_2.MouseLeave += new System.EventHandler(this.Button_MouseLeave);
+            this.Button_3_2.MouseUp += new System.Windows.Forms.MouseEventHandler(this.Button_MouseUp);
+            // 
+            // Button_3_1
+            // 
+            this.Button_3_1.BackColor = System.Drawing.Color.AliceBlue;
+            this.Button_3_1.Dock = System.Windows.Forms.DockStyle.Left;
+            this.Button_3_1.ForeColor = System.Drawing.Color.SteelBlue;
+            this.Button_3_1.Location = new System.Drawing.Point(0, 0);
+            this.Button_3_1.Name = "Button_3_1";
+            this.Button_3_1.Size = new System.Drawing.Size(166, 35);
+            this.Button_3_1.TabIndex = 8;
+            this.Button_3_1.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+            this.Button_3_1.MouseDown += new System.Windows.Forms.MouseEventHandler(this.Button_MouseDown);
+            this.Button_3_1.MouseEnter += new System.EventHandler(this.Button_MouseEnter);
+            this.Button_3_1.MouseLeave += new System.EventHandler(this.Button_MouseLeave);
+            this.Button_3_1.MouseUp += new System.Windows.Forms.MouseEventHandler(this.Button_MouseUp);
+            // 
+            // Button_3_3
+            // 
+            this.Button_3_3.BackColor = System.Drawing.Color.AliceBlue;
+            this.Button_3_3.Dock = System.Windows.Forms.DockStyle.Right;
+            this.Button_3_3.Font = new System.Drawing.Font("Malgun Gothic", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(129)));
+            this.Button_3_3.ForeColor = System.Drawing.Color.SteelBlue;
+            this.Button_3_3.Location = new System.Drawing.Point(332, 0);
+            this.Button_3_3.Name = "Button_3_3";
+            this.Button_3_3.Size = new System.Drawing.Size(166, 35);
+            this.Button_3_3.TabIndex = 10;
+            this.Button_3_3.Text = "종료";
+            this.Button_3_3.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+            this.Button_3_3.MouseDown += new System.Windows.Forms.MouseEventHandler(this.Button_MouseDown);
+            this.Button_3_3.MouseEnter += new System.EventHandler(this.Button_MouseEnter);
+            this.Button_3_3.MouseLeave += new System.EventHandler(this.Button_MouseLeave);
+            this.Button_3_3.MouseUp += new System.Windows.Forms.MouseEventHandler(this.Button_MouseUp);
             // 
             // frmMain
             // 
             this.BackColor = System.Drawing.Color.White;
             this.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
             this.ClientSize = new System.Drawing.Size(500, 210);
-            this.Controls.Add(this.BottomRightLabel);
-            this.Controls.Add(this.BottomLeftLabel);
-            this.Controls.Add(this.BottomLabel);
+            this.Controls.Add(this.ButtonContainer1);
+            this.Controls.Add(this.ButtonContainer2);
+            this.Controls.Add(this.ButtonContainer3);
             this.Controls.Add(this.HeadLabel);
             this.Controls.Add(this.BottomPanel);
             this.Controls.Add(this.RightPanel);
@@ -243,6 +326,9 @@
             this.Text = "Los Angeles Role Play";
             this.UnitProgressBar_Background.ResumeLayout(false);
             this.TotalProgressBar_Background.ResumeLayout(false);
+            this.ButtonContainer2.ResumeLayout(false);
+            this.ButtonContainer1.ResumeLayout(false);
+            this.ButtonContainer3.ResumeLayout(false);
             this.ResumeLayout(false);
 
         }
@@ -262,9 +348,15 @@
         private System.ComponentModel.BackgroundWorker DownloadWorker;
         private System.Windows.Forms.Timer GameStart;
         private System.Windows.Forms.Timer GameExit;
-        private System.Windows.Forms.Label BottomLabel;
-        private System.Windows.Forms.Label BottomLeftLabel;
-        private System.Windows.Forms.Label BottomRightLabel;
+        private System.Windows.Forms.Label Button_1_1;
+        private System.Windows.Forms.Label Button_2_1;
+        private System.Windows.Forms.Label Button_2_2;
+        private System.Windows.Forms.Panel ButtonContainer1;
+        private System.Windows.Forms.Panel ButtonContainer2;
+        private System.Windows.Forms.Panel ButtonContainer3;
+        private System.Windows.Forms.Label Button_3_1;
+        private System.Windows.Forms.Label Button_3_3;
+        private System.Windows.Forms.Label Button_3_2;
     }
 }
 

@@ -19,6 +19,7 @@ using System.Security.Cryptography;
 using System.Diagnostics;
 using System.Net;
 using Microsoft.Win32;
+using System.Reflection;
 
 namespace Los_Angeles_Role_Play
 {
@@ -85,9 +86,11 @@ namespace Los_Angeles_Role_Play
 
                     if (statuscode[0] != HttpStatusCode.OK && statuscode[1] != HttpStatusCode.OK) {
                         PercentageLabel.Text = "서버에 연결할 수 없습니다.";
-                        BottomLeftLabel.Text = "포럼";
-                        SetBottomLeftLabelFunction(Program.InfowebURL);
-                        ShowBottomLabels(2);
+                        Button_2_1.Text = "인포웹";
+                        Button_2_2.Text = "종료";
+                        SetButtonEvent(Button_2_1, ButtonEvent_OpenInfoweb);
+                        SetButtonEvent(Button_2_2, Application.Exit);
+                        ShowButtons(2);
                         this.TopMost = true;
                         this.TopMost = false;
                     } else {
@@ -127,9 +130,11 @@ namespace Los_Angeles_Role_Play
                     }
                     else if (string.Compare(GetUsername(), "NULL") == 0) {
                         PercentageLabel.Text = "설치 완료";
-                        BottomLeftLabel.Text = "포럼";
-                        SetBottomLeftLabelFunction(Program.InfowebURL);
-                        ShowBottomLabels(2);
+                        Button_2_1.Text = "인포웹";
+                        Button_2_2.Text = "종료";
+                        SetButtonEvent(Button_2_1, ButtonEvent_OpenInfoweb);
+                        SetButtonEvent(Button_2_2, Application.Exit);
+                        ShowButtons(2);
                         this.TopMost = true;
                         this.TopMost = false;
                     }
@@ -164,9 +169,11 @@ namespace Los_Angeles_Role_Play
                     PercentageLabel.Text = "챗로그 백업에 실패했습니다!";
                 }
                 // 하단 버튼 설정
-                BottomLeftLabel.Text = "열기";
-                SetBottomLeftLabelFunction(Program.Path_ChatLog);
-                ShowBottomLabels(2);
+                Button_2_1.Text = "열기";
+                Button_2_2.Text = "종료";
+                SetButtonEvent(Button_2_1, ButtonEvent_OpenChatLog);
+                SetButtonEvent(Button_2_2, Application.Exit);
+                ShowButtons(2);
                 this.Show();
                 this.TopMost = true;
                 this.TopMost = false;
@@ -194,112 +201,87 @@ namespace Los_Angeles_Role_Play
         #endregion
 
         #region < 하단 버튼 >
-        bool[] focus = new bool[3];
-        string BottomLeftLabelFunction = string.Empty;
+        object focusedButton = null;
+        private delegate void ButtonEvent();
 
-        private void SetBottomLeftLabelFunction(string function) {
-            BottomLeftLabelFunction = function;
-        }
-
-        private void ShowBottomLabels(int count) {
+        private void ShowButtons(int count) {
             switch (count) {
                 case 0:
-                    BottomLabel.Visible = false;
-                    BottomLeftLabel.Visible = false;
-                    BottomRightLabel.Visible = false;
+                    ButtonContainer1.Visible = false;
+                    ButtonContainer2.Visible = false;
+                    ButtonContainer3.Visible = false;
                     break;
                 case 1:
-                    BottomLabel.Visible = true;
-                    BottomLeftLabel.Visible = false;
-                    BottomRightLabel.Visible = false;
+                    ButtonContainer1.Visible = true;
+                    ButtonContainer2.Visible = false;
+                    ButtonContainer3.Visible = false;
                     break;
                 case 2:
-                    BottomLabel.Visible = false;
-                    BottomLeftLabel.Visible = true;
-                    BottomRightLabel.Visible = true;
+                    ButtonContainer1.Visible = false;
+                    ButtonContainer2.Visible = true;
+                    ButtonContainer3.Visible = false;
+                    break;
+                case 3:
+                    ButtonContainer1.Visible = false;
+                    ButtonContainer2.Visible = false;
+                    ButtonContainer3.Visible = true;
                     break;
                 default:
                     break;
             }
         }
 
-        private void ButtomLeftLabel_Click(object sender, EventArgs e) {
-            Process.Start(BottomLeftLabelFunction);
+        private void SetButtonEvent(Label button, ButtonEvent func) {
+            // 이벤트 해제
+            FieldInfo f1 = typeof(Control).GetField("EventClick", BindingFlags.Static | BindingFlags.NonPublic);
+            object obj = f1.GetValue(button);
+            PropertyInfo pi = button.GetType().GetProperty("Events", BindingFlags.NonPublic | BindingFlags.Instance);
+            EventHandlerList list = (EventHandlerList)pi.GetValue(button, null);
+            list.RemoveHandler(obj, list[obj]);
+
+            // 이벤트 설정
+            button.Click += (object sender, EventArgs e) => {
+                func();
+            };
         }
 
-        private void BottomLabel_Click(object sender, EventArgs e) {
-            Application.Exit();
+        private void ButtonEvent_OpenInfoweb() {
+            Process.Start(Program.InfowebURL);
         }
 
-        private void BottomLabel_MouseEnter(object sender, EventArgs e) {
-            focus[0] = true;
-            BottomLabel.BackColor = Color.SkyBlue;
-            BottomLabel.ForeColor = Color.White;
+        private void ButtonEvent_OpenForum() {
+            Process.Start(Program.ForumURL);
         }
 
-        private void BottomLabel_MouseLeave(object sender, EventArgs e) {
-            focus[0] = false;
-            BottomLabel.BackColor = Color.AliceBlue;
-            BottomLabel.ForeColor = Color.SteelBlue;
+        private void ButtonEvent_OpenChatLog() {
+            Process.Start(Program.Path_ChatLog);
         }
 
-        private void BottomLabel_MouseDown(object sender, MouseEventArgs e) {
-            BottomLabel.BackColor = Color.LightBlue;
-            BottomLabel.ForeColor = Color.White;
+        private void ButtonEvent_OpenPath(string path) {
+            Process.Start(path);
         }
 
-        private void BottomLabel_MouseUp(object sender, MouseEventArgs e) {
-            if (focus[0]) {
-                BottomLabel.BackColor = Color.SkyBlue;
-                BottomLabel.ForeColor = Color.White;
-            }
+        private void Button_MouseEnter(object sender, EventArgs e) {
+            focusedButton = sender;
+            ((Label)sender).BackColor = Color.SkyBlue;
+            ((Label)sender).ForeColor = Color.White;
         }
 
-        private void BottomLeftLabel_MouseEnter(object sender, EventArgs e) {
-            focus[1] = true;
-            BottomLeftLabel.BackColor = Color.SkyBlue;
-            BottomLeftLabel.ForeColor = Color.White;
+        private void Button_MouseLeave(object sender, EventArgs e) {
+            focusedButton = null;
+            ((Label)sender).BackColor = Color.AliceBlue;
+            ((Label)sender).ForeColor = Color.SteelBlue;
         }
 
-        private void BottomLeftLabel_MouseLeave(object sender, EventArgs e) {
-            focus[1] = false;
-            BottomLeftLabel.BackColor = Color.AliceBlue;
-            BottomLeftLabel.ForeColor = Color.SteelBlue;
+        private void Button_MouseDown(object sender, MouseEventArgs e) {
+            ((Label)sender).BackColor = Color.LightBlue;
+            ((Label)sender).ForeColor = Color.White;
         }
 
-        private void BottomLeftLabel_MouseDown(object sender, MouseEventArgs e) {
-            BottomLeftLabel.BackColor = Color.LightBlue;
-            BottomLeftLabel.ForeColor = Color.White;
-        }
-
-        private void BottomLeftLabel_MouseUp(object sender, MouseEventArgs e) {
-            if (focus[1]) {
-                BottomLeftLabel.BackColor = Color.SkyBlue;
-                BottomLeftLabel.ForeColor = Color.White;
-            }
-        }
-
-        private void BottomRightLabel_MouseEnter(object sender, EventArgs e) {
-            focus[2] = true;
-            BottomRightLabel.BackColor = Color.SkyBlue;
-            BottomRightLabel.ForeColor = Color.White;
-        }
-
-        private void BottomRightLabel_MouseLeave(object sender, EventArgs e) {
-            focus[2] = false;
-            BottomRightLabel.BackColor = Color.AliceBlue;
-            BottomRightLabel.ForeColor = Color.SteelBlue;
-        }
-
-        private void BottomRightLabel_MouseDown(object sender, MouseEventArgs e) {
-            BottomRightLabel.BackColor = Color.LightBlue;
-            BottomRightLabel.ForeColor = Color.White;
-        }
-
-        private void BottomRightLabel_MouseUp(object sender, MouseEventArgs e) {
-            if (focus[2]) {
-                BottomRightLabel.BackColor = Color.SkyBlue;
-                BottomRightLabel.ForeColor = Color.White;
+        private void Button_MouseUp(object sender, MouseEventArgs e) {
+            if (focusedButton == sender) {
+                ((Label)sender).BackColor = Color.SkyBlue;
+                ((Label)sender).ForeColor = Color.White;
             }
         }
         #endregion
@@ -366,10 +348,12 @@ namespace Los_Angeles_Role_Play
             }
             
             if (statuscode != HttpStatusCode.OK || newhash == string.Empty) { // 최신 런처를 확인할 수 없는 경우
-                PercentageLabel.Text = "최신 버전의 런처를 다운로드받으세요.";
-                BottomLeftLabel.Text = "포럼";
-                SetBottomLeftLabelFunction(Program.InfowebURL);
-                ShowBottomLabels(2);
+                PercentageLabel.Text = "최신 버전의 런처를 내려받으세요.";
+                Button_2_1.Text = "인포웹";
+                Button_2_2.Text = "종료";
+                SetButtonEvent(Button_2_1, ButtonEvent_OpenInfoweb);
+                SetButtonEvent(Button_2_2, Application.Exit);
+                ShowButtons(2);
                 this.TopMost = true;
                 this.TopMost = false;
                 return;
@@ -614,8 +598,9 @@ namespace Los_Angeles_Role_Play
                 // 게임 강제종료
                 KillGameProcess();
                 // 하단 버튼 설정
-                BottomLabel.Text = "종료";
-                ShowBottomLabels(1);
+                Button_1_1.Text = "종료";
+                SetButtonEvent(Button_1_1, Application.Exit);
+                ShowButtons(1);
                 return true;
             }
             return false;
@@ -663,9 +648,11 @@ namespace Los_Angeles_Role_Play
                 // 상태 표시
                 PercentageLabel.Text = "비인가 파일 검출. 다시 실행하세요.";
                 // 하단 버튼 설정
-                BottomLeftLabel.Text = "보기";
-                SetBottomLeftLabelFunction(aufcontainer);
-                ShowBottomLabels(2);
+                Button_2_1.Text = "보기";
+                Button_2_2.Text = "종료";
+                SetButtonEvent(Button_2_1, () => { ButtonEvent_OpenPath(aufcontainer); });
+                SetButtonEvent(Button_2_2, Application.Exit);
+                ShowButtons(2);
                 // 최상단
                 this.TopMost = true;
                 this.TopMost = false;
