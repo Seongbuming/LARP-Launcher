@@ -735,7 +735,7 @@ namespace Los_Angeles_Role_Play
                 allowlist = (new StreamReader(response.GetResponseStream(), Encoding.UTF8)).ReadToEnd();
 
                 if (response.StatusCode != HttpStatusCode.OK) {
-                    alert("ACL 정보를 받아오지 못했습니다.", false);
+                    alert("클레오 화이트리스트 정보를 받아오지 못했습니다.", false);
                 } else {
                     response.Close();
                 }
