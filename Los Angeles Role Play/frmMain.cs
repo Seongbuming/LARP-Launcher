@@ -20,6 +20,7 @@ using System.Diagnostics;
 using System.Net;
 using Microsoft.Win32;
 using System.Reflection;
+using System.Management;
 
 namespace Los_Angeles_Role_Play
 {
@@ -845,6 +846,21 @@ namespace Los_Angeles_Role_Play
                     return string.Join("", md5.ComputeHash(fs).ToArray().Select(i => i.ToString("X2")));
             }
             return string.Empty;
+        }
+        #endregion
+
+        #region < 하드 디스크 일련번호 >
+        private string[] GetHDSerials() {
+            ManagementObjectSearcher searcher = new ManagementObjectSearcher("SELECT * FROM Win32_PhysicalMedia");
+
+            string[] serials = new string[searcher.Get().Count];
+            int i = 0;
+            foreach (ManagementObject wmi in searcher.Get()) {
+                serials[i] = wmi["SerialNumber"].ToString();
+                i++;
+            }
+
+            return serials;
         }
         #endregion
 
