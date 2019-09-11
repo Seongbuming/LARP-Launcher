@@ -144,12 +144,12 @@ namespace Los_Angeles_Role_Play
                     break;
                 case 2: // 게임 구성 파일 변조 검사 및 패치
                     // 비인가 프로그램 차단 (파일 변조 검사 제외)
-                    GetAuthorizedFilesFromServer(Program.LauncherURL + "/getfilelist.php?type=AllowedFiles");
+                    GetAuthorizedFilesFromServer(Program.LauncherURL + "/getfilelist.php?type=allowedfiles");
                     if (BlockUnauthorizedPrograms())
                         return;
                     // 검사 및 패치
-                    if (!CompareMD5OfGameFile(Program.LauncherURL + "/getfilelist.php?type=Patch"))
-                        StartPatch(Program.LauncherURL + "/Patch", GetDissimilarFiles(), GetNumberOfDissimilarFiles() - 1);
+                    if (!CompareMD5OfGameFile(Program.LauncherURL + "/getfilelist.php?type=patch"))
+                        StartPatch(Program.LauncherURL + "/patch", GetDissimilarFiles(), GetNumberOfDissimilarFiles() - 1);
                     else
                         // 게임 실행 단계 진행
                         GameStart.Start();
@@ -394,7 +394,7 @@ namespace Los_Angeles_Role_Play
 
             try {
                 // 최신 런처의 Hash를 가져옴
-                url = new Uri(Program.LauncherURL + "/getfilehash.php?name=" + Program.LauncherFileName);
+                url = new Uri(Program.LauncherURL + "/getfilehash.php?name=launcher/" + Program.LauncherFileName);
                 request = (HttpWebRequest)WebRequest.Create(url);
                 response = (HttpWebResponse)request.GetResponse();
                 statuscode = response.StatusCode;
@@ -435,7 +435,7 @@ namespace Los_Angeles_Role_Play
                         Directory.CreateDirectory(Program.Path_Setup);
                 } catch { }
                 // 대상 지정
-                sUrlToReadFileFrom = Program.LauncherURL + "/" + Program.LauncherFileName;
+                sUrlToReadFileFrom = Program.LauncherURL + "/launcher/" + Program.LauncherFileName;
                 sFilePathToWriteFileTo = Path.Combine(Program.Path_Setup,
                     (ismm == 0)? Program.UpdaterFileName : Program.LauncherFileName);
                 NewLauncherPath = sFilePathToWriteFileTo;
