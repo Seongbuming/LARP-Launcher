@@ -36,6 +36,7 @@ namespace Los_Angeles_Role_Play
         #region  < Initialize > 
         int InitLevel = 0;
         int ExitLevel = 0;
+        bool directstart = false;
         string username = string.Empty;
 
         public frmMain(string[] args) {
@@ -45,29 +46,29 @@ namespace Los_Angeles_Role_Play
             // 사용자 닉네임 파라미터 전달
             if (args.Length >= 1)
                 username = args[0].Replace("larp:", string.Empty).Replace("/", string.Empty);
-            else if (Program.TestMode)
-                username = "Larp_Tester";
             else
                 LoadUsernameFromRegistry();
 
+            SetStatusMessageToDefault();
+
             if (username.Length > 0) {
-                PercentageLabel.Text = username + "님, 안녕하세요!";
                 // Url Scheme으로 실행 시 바로 게임 실행
                 if (args.Length >= 1) {
+                    directstart = true;
                     StartGame();
                     return;
                 }
+            }
+
+            StartUpdate();
+        }
+
+        private void SetStatusMessageToDefault() {
+            if (username.Length > 0) {
+                PercentageLabel.Text = username + "님, 안녕하세요!";
             } else {
                 PercentageLabel.Text = "닉네임을 설정해 주세요.";
             }
-
-            Button_3_1.Text = "게임실행";
-            Button_3_2.Text = "닉네임 설정";
-            Button_3_3.Text = "종료";
-            SetButtonEvent(Button_3_1, ButtonEvent_GameStart);
-            SetButtonEvent(Button_3_2, ButtonEvent_SetNickname);
-            SetButtonEvent(Button_3_3, Application.Exit);
-            ShowButtons(3);
         }
 
         private string GetUsername() {
@@ -76,12 +77,6 @@ namespace Los_Angeles_Role_Play
 
         private void SetUsername(string name) {
             username = name;
-
-            if (username.Length > 0) {
-                PercentageLabel.Text = username + "님, 안녕하세요!";
-            } else {
-                PercentageLabel.Text = "닉네임을 설정해 주세요.";
-            }
         }
 
         private void LoadUsernameFromRegistry() {
@@ -99,6 +94,10 @@ namespace Los_Angeles_Role_Play
                 reg.SetValue("PlayerName", username);
             } catch { }
         }
+
+        private bool GetDirectStart() {
+            return directstart;
+        }
         #endregion
 
         #region < 게임 실행 >
@@ -107,7 +106,7 @@ namespace Los_Angeles_Role_Play
             KillGameProcess();
             Debug.Print("InitLevel - " + InitLevel + " - ");
             switch (InitLevel) {
-                case 0: // 서버 연결 확인
+                case 1: // 서버 연결 확인
                     HttpWebRequest request;
                     HttpWebResponse response;
                     HttpStatusCode[] statuscode = new HttpStatusCode[2];
@@ -139,10 +138,10 @@ namespace Los_Angeles_Role_Play
                     }
 
                     break;
-                case 1: // 런처 업데이트
+                case 2: // 런처 업데이트
                     StartUpdate();
                     break;
-                case 2: // 게임 구성 파일 변조 검사 및 패치
+                case 3: // 게임 구성 파일 변조 검사 및 패치
                     // 비인가 프로그램 차단 (파일 변조 검사 제외)
                     GetAuthorizedFilesFromServer(Program.LauncherURL + "/getfilelist.php?type=allowedfiles");
                     if (BlockUnauthorizedPrograms())
@@ -154,7 +153,7 @@ namespace Los_Angeles_Role_Play
                         // 게임 실행 단계 진행
                         GameStart.Start();
                     break;
-                case 3: // 게임 실행
+                case 4: // 게임 실행
                     // 비인가 프로그램 차단 (파일 변조 검사 포함)
                     if (BlockUnauthorizedPrograms())
                         return;
@@ -165,10 +164,8 @@ namespace Los_Angeles_Role_Play
                         // URL Scheme
                         CreateUrlSchemeRegistry();
                         // 최신 런처 실행
-                        Process.Start(GetNewLauncherPath(), GetUsername());
-                        Application.Exit();
-                    }
-                    else if (string.Compare(GetUsername(), "NULL") == 0) {
+                        RunNewLauncher();
+                    } else if (string.Compare(GetUsername(), "NULL") == 0) {
                         PercentageLabel.Text = "설치 완료";
                         Button_2_1.Text = "인포웹";
                         Button_2_2.Text = "종료";
@@ -177,8 +174,7 @@ namespace Los_Angeles_Role_Play
                         ShowButtons(2);
                         this.TopMost = true;
                         this.TopMost = false;
-                    }
-                    else {
+                    } else {
                         PercentageLabel.Text = "게임에 접속중입니다.";
                         // SAMP 실행
                         Process.Start(Path.Combine(GetGamePath(), "samp.exe"), "server.la-rp.co.kr");
@@ -221,8 +217,12 @@ namespace Los_Angeles_Role_Play
         }
 
         private void StartGame() {
-            InitLevel = 0;
+            InitLevel = 1;
             GameStart.Start();
+        }
+
+        private int GetInitLevel() {
+            return InitLevel;
         }
         #endregion
 
@@ -290,6 +290,16 @@ namespace Los_Angeles_Role_Play
             };
         }
 
+        private void SetButtonsToDefault() {
+            Button_3_1.Text = "게임실행";
+            Button_3_2.Text = "닉네임 설정";
+            Button_3_3.Text = "종료";
+            SetButtonEvent(Button_3_1, ButtonEvent_GameStart);
+            SetButtonEvent(Button_3_2, ButtonEvent_SetNickname);
+            SetButtonEvent(Button_3_3, Application.Exit);
+            ShowButtons(3);
+        }
+
         private void ButtonEvent_OpenInfoweb() {
             Process.Start(Program.InfowebURL);
         }
@@ -315,8 +325,10 @@ namespace Los_Angeles_Role_Play
         }
 
         private void ButtonEvent_SetNickname() {
-            string name = Microsoft.VisualBasic.Interaction.InputBox("사용하실 닉네임을 입력하세요.", "닉네임 설정");
+            string name = Microsoft.VisualBasic.Interaction.InputBox("사용하실 닉네임을 입력하세요.", "닉네임 설정", GetUsername());
             SetUsername(name);
+            SetStatusMessageToDefault();
+            SaveUsernameToRegistry();
         }
 
         private void Button_MouseEnter(object sender, EventArgs e) {
@@ -392,6 +404,11 @@ namespace Los_Angeles_Role_Play
             HttpStatusCode statuscode;
             string newhash;
 
+            PercentageLabel.Text = "업데이트 확인중";
+            Button_1_1.Text = "종료";
+            SetButtonEvent(Button_1_1, Application.Exit);
+            ShowButtons(1);
+
             try {
                 // 최신 런처의 Hash를 가져옴
                 url = new Uri(Program.LauncherURL + "/getfilehash.php?name=launcher/" + Program.LauncherFileName);
@@ -422,10 +439,15 @@ namespace Los_Angeles_Role_Play
             
             // 런처로 실행되었는지 여부
             int ismm = string.Compare(Application.ExecutablePath, Path.Combine(Program.Path_Setup, Program.LauncherFileName), true);
-            
-            if (string.Compare(newhash, ehash, true) == 0 && ismm == 0) // 런처가 최신 버전인 경우
-                GameStart.Start();
-            else { // 런처 업데이트가 필요한 경우
+
+            if ((string.Compare(newhash, ehash, true) == 0 && ismm == 0) || Program.TestMode) { // 런처가 최신 버전인 경우
+                if (GetInitLevel() > 0) {
+                    GameStart.Start();
+                } else {
+                    SetStatusMessageToDefault();
+                    SetButtonsToDefault();
+                }
+            } else { // 런처 업데이트가 필요한 경우
                 // Progress Bar 설정
                 SetProgressBar(0, 0);
                 SetProgressBar(1, 50);
@@ -437,7 +459,7 @@ namespace Los_Angeles_Role_Play
                 // 대상 지정
                 sUrlToReadFileFrom = Program.LauncherURL + "/launcher/" + Program.LauncherFileName;
                 sFilePathToWriteFileTo = Path.Combine(Program.Path_Setup,
-                    (ismm == 0)? Program.UpdaterFileName : Program.LauncherFileName);
+                    (ismm == 0) ? Program.UpdaterFileName : Program.LauncherFileName);
                 NewLauncherPath = sFilePathToWriteFileTo;
                 // 파일이 이미 존재할 시 삭제
                 try {
@@ -450,6 +472,11 @@ namespace Los_Angeles_Role_Play
                 sMode = "Update";
                 DownloadWorker.RunWorkerAsync();
             }
+        }
+
+        private void RunNewLauncher() {
+            Process.Start(GetNewLauncherPath(), (GetDirectStart()) ? GetUsername() : string.Empty);
+            Application.Exit();
         }
 
         private string GetNewLauncherPath() {
@@ -539,6 +566,11 @@ namespace Los_Angeles_Role_Play
         private void DownloadWorker_ProgressChanged(object sender, ProgressChangedEventArgs e) {
             // Unit Progress Bar 동기화
             SetProgressBar(0, e.ProgressPercentage);
+
+            if (string.Compare(sMode, "Update") == 0) {
+                // Total Progress Bar 동기화
+                SetProgressBar(1, e.ProgressPercentage);
+            }
         }
 
         private void DownloadWorker_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e) {
@@ -573,9 +605,12 @@ namespace Los_Angeles_Role_Play
                     PercentageLabel.Text = "업데이트가 취소되었습니다.";
                     this.TopMost = true;
                     this.TopMost = false;
+                } else {
+                    if (GetInitLevel() > 0)
+                        GameStart.Start();
+                    else
+                        RunNewLauncher();
                 }
-                else
-                    GameStart.Start();
             }
         }
         #endregion
