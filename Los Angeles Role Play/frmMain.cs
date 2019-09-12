@@ -143,7 +143,9 @@ namespace Los_Angeles_Role_Play
                     break;
                 case 3: // 게임 구성 파일 변조 검사 및 패치
                     // 비인가 프로그램 차단 (파일 변조 검사 제외)
-                    GetAuthorizedFilesFromServer(Program.LauncherURL + "/getfilelist.php?type=allowedfiles");
+                    ResetAuthorizedFiles();
+                    LoadAuthorizedFilesFromServer(Program.LauncherURL + "/getfilelist.php?type=allowedfiles");
+                    LoadAuthorizedFilesFromServer(Program.LauncherURL + "/getfilelist.php?type=patch");
                     if (BlockUnauthorizedPrograms())
                         return;
                     // 검사 및 패치
@@ -202,7 +204,7 @@ namespace Los_Angeles_Role_Play
                     File.Copy(Path.Combine(sampchatlogpath, "chatlog.txt"), larpchatlogfile, true);
                     PercentageLabel.Text = "챗로그가 자동 백업되었습니다.";
                 } catch {
-                    PercentageLabel.Text = "챗로그 백업에 실패했습니다!";
+                    PercentageLabel.Text = "챗로그 백업에 실패했습니다.";
                 }
                 // 하단 버튼 설정
                 Button_2_1.Text = "열기";
@@ -679,7 +681,7 @@ namespace Los_Angeles_Role_Play
             bool blocked = false;
             if (AntiCheat() || AntiAUF())
                 blocked = true;
-            if (GetNumberOfDissimilarFiles() > 0 && blockdissimilarfiles) {
+            if (!CompareMD5OfGameFile(Program.LauncherURL + "/getfilelist.php?type=patch") && blockdissimilarfiles) {
                 blocked = true;
                 // 오류 메시지 출력
                 alert("게임 구성 파일이 변조되었습니다.", true);
@@ -756,7 +758,11 @@ namespace Los_Angeles_Role_Play
             return false;
         }
 
-        private string GetAuthorizedFilesFromServer(string listurl) {
+        private void ResetAuthorizedFiles() {
+            AuthorizedFiles = string.Empty;
+        }
+
+        private string LoadAuthorizedFilesFromServer(string listurl) {
             Uri url;
             HttpWebRequest request;
             HttpWebResponse response = null;
@@ -774,7 +780,12 @@ namespace Los_Angeles_Role_Play
                 } else {
                     response.Close();
                 }
-                AuthorizedFiles = allowlist;
+
+                if (AuthorizedFiles.Length == 0) {
+                    AuthorizedFiles = allowlist;
+                } else {
+                    AuthorizedFiles += "|" + allowlist;
+                }
                 Debug.Print("허용된 클레오: " + allowlist);
             } catch {
                 alert("런처 서버에 연결할 수 없습니다.", false);
