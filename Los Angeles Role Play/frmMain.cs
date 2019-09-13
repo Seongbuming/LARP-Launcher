@@ -89,10 +89,8 @@ namespace Los_Angeles_Role_Play
         }
 
         private void SaveUsernameToRegistry() {
-            try {
-                RegistryKey reg = Registry.CurrentUser.CreateSubKey(@"Software\SAMP", RegistryKeyPermissionCheck.ReadWriteSubTree);
-                reg.SetValue("PlayerName", username);
-            } catch { }
+            RegistryKey reg = Registry.CurrentUser.CreateSubKey(@"Software\SAMP", RegistryKeyPermissionCheck.ReadWriteSubTree);
+            reg.SetValue("PlayerName", username);
         }
 
         private bool GetDirectStart() {
