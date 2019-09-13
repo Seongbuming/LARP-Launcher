@@ -672,7 +672,7 @@ namespace Los_Angeles_Role_Play
         #endregion
 
         #region  < 비인가 프로그램 차단 > 
-        string[] AllowedExtension = new string[] { ".cleo", ".cs", ".asi", ".dll" };
+        string[] AllowedExtension = new string[] { ".cleo", ".cs", ".asi", ".exe", ".dll" };
         string AuthorizedFiles = String.Empty;
 
         private bool BlockUnauthorizedPrograms(bool blockdissimilarfiles = false) {
