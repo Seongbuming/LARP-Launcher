@@ -21,6 +21,7 @@ using System.Net;
 using Microsoft.Win32;
 using System.Reflection;
 using System.Management;
+using System.Collections.Generic;
 
 namespace Los_Angeles_Role_Play
 {
@@ -96,6 +97,11 @@ namespace Los_Angeles_Role_Play
         private bool GetDirectStart() {
             return directstart;
         }
+
+        private bool isExecutedByLauncher() {
+            // 런처로 실행되었는지 여부
+            return (string.Compare(Application.ExecutablePath, Path.Combine(Program.Path_Setup, Program.LauncherFileName), true) == 0);
+        }
         #endregion
 
         #region < 게임 실행 >
@@ -148,7 +154,7 @@ namespace Los_Angeles_Role_Play
                         return;
                     // 검사 및 패치
                     if (!CompareMD5OfGameFile(Program.LauncherURL + "/getfilelist.php?type=patch"))
-                        StartPatch(Program.LauncherURL + "/patch", GetDissimilarFiles(), GetNumberOfDissimilarFiles() - 1);
+                        StartPatch(Program.LauncherURL + "/patch", GetDissimilarFiles());
                     else
                         // 게임 실행 단계 진행
                         GameStart.Start();
@@ -357,13 +363,15 @@ namespace Los_Angeles_Role_Play
         #endregion
 
         #region  < 패치 및 업데이트 > 
-        string sMode;
+        /*string sMode;
         string[] sFileList;
         string sHost, sUrlToReadFileFrom, sFilePathToWriteFileTo;
-        int sCurrentFileIndex, sFinalIndex;
+        int sCurrentFileIndex, sFinalIndex;*/
+        string[] PatchFileList;
+        int PatchFileIndex;
         string NewLauncherPath = String.Empty;
 
-        private void StartPatch(string host, string[] filelist, int finalindex = -1) {
+        private void StartPatch(string host, string[] filelist) {
             // 비인가 프로그램 차단
             if (BlockUnauthorizedPrograms())
                 return;
@@ -371,30 +379,8 @@ namespace Los_Angeles_Role_Play
             // Progress Bar 초기화
             SetProgressBar(0, 0);
             SetProgressBar(1, 0);
-
-            // 파일을 다운로드할 서버 URL
-            sHost = host;
-            // 다운로드할 모든 파일의 URL
-            sFileList = filelist;
-            // 인덱스 초기화
-            sCurrentFileIndex = 0;
-            // 마지막 파일의 인덱스
-            if (finalindex == -1)
-                for (int i = 0; i < filelist.Length; i++)
-                    if (filelist[i].Length > 0)
-                        finalindex++;
-            sFinalIndex = finalindex;
-            Debug.Print("finalindex = " + finalindex.ToString());
-            // 다운로드할 파일의 URL
-            sUrlToReadFileFrom = sHost + "/" + sFileList[sCurrentFileIndex].Replace('\\', '/');
-            // 파일을 저장할 경로 + 이름
-            sFilePathToWriteFileTo = Path.Combine(GetGamePath(), sFileList[sCurrentFileIndex]);
-
-            // PercentageLabel 동기화
-            PercentageLabel.Text = "패치중: " + sFileList[sCurrentFileIndex];
-            // DownloadWorker 실행
-            sMode = "Patch";
-            DownloadWorker.RunWorkerAsync();
+            // 파일 다운로드
+            DownloadPatchFiles(host, GetGamePath(), filelist);
         }
 
         private void StartUpdate() {
@@ -436,11 +422,8 @@ namespace Los_Angeles_Role_Play
             
             // 현재 버전의 Hash를 가져옴
             string ehash = GetMD5OfFile(Application.ExecutablePath).ToUpper();
-            
-            // 런처로 실행되었는지 여부
-            int ismm = string.Compare(Application.ExecutablePath, Path.Combine(Program.Path_Setup, Program.LauncherFileName), true);
 
-            if ((string.Compare(newhash, ehash, true) == 0 && ismm == 0) || Program.TestMode) { // 런처가 최신 버전인 경우
+            if ((string.Compare(newhash, ehash, true) == 0 && isExecutedByLauncher()) || Program.TestMode) { // 런처가 최신 버전인 경우
                 if (GetInitLevel() > 0) {
                     GameStart.Start();
                 } else {
@@ -448,29 +431,11 @@ namespace Los_Angeles_Role_Play
                     SetButtonsToDefault();
                 }
             } else { // 런처 업데이트가 필요한 경우
-                // Progress Bar 설정
+                // Progress Bar 초기화
                 SetProgressBar(0, 0);
-                SetProgressBar(1, 50);
-                // 경로 생성
-                try {
-                    if (!Directory.Exists(Program.Path_Setup))
-                        Directory.CreateDirectory(Program.Path_Setup);
-                } catch { }
-                // 대상 지정
-                sUrlToReadFileFrom = Program.LauncherURL + "/launcher/" + Program.LauncherFileName;
-                sFilePathToWriteFileTo = Path.Combine(Program.Path_Setup,
-                    (ismm == 0) ? Program.UpdaterFileName : Program.LauncherFileName);
-                NewLauncherPath = sFilePathToWriteFileTo;
-                // 파일이 이미 존재할 시 삭제
-                try {
-                    if (File.Exists(sFilePathToWriteFileTo))
-                        File.Delete(sFilePathToWriteFileTo);
-                } catch { }
-                // PercentageLabel 동기화
-                PercentageLabel.Text = "최신 런처 설치중";
-                // DownloadWorker 실행
-                sMode = "Update";
-                DownloadWorker.RunWorkerAsync();
+                SetProgressBar(1, 0);
+                // 런처 업데이트
+                UpdateLauncher();
             }
         }
 
@@ -508,115 +473,90 @@ namespace Los_Angeles_Role_Play
             return true;
         }
 
-        private void DownloadWorker_DoWork(object sender, DoWorkEventArgs e) {
-            try {
-                if(string.Compare(sMode, "Patch") == 0)
-                    Debug.Print("패치[" + sCurrentFileIndex.ToString() + "] " + sUrlToReadFileFrom);
-
-                // 다운로드할 파일의 정확한 크기(bytes)를 구함
-                Uri url = new Uri(sUrlToReadFileFrom);
-                HttpWebRequest request = (HttpWebRequest)WebRequest.Create(url);
-                HttpWebResponse response = (HttpWebResponse)request.GetResponse();
-                Int64 iSize = response.ContentLength;
-                response.Close();
-
-                // Progress Bar를 동기화하기 위해 이미 다운로드된 총 크기를 측정
-                Int64 iRunningByteTotal = 0;
-
-                // 파일을 다운로드하기 위한 webclient 오브젝트
-                using (WebClient client = new WebClient()) {
-                    // 원격 URL의 파일을 읽기 모드로 염
-                    using (System.IO.Stream streamRemote = client.OpenRead(new Uri(sUrlToReadFileFrom))) {
-                        // FileStream 오브젝트를 사용하여 다운로드된 데이터를 파일에 저장할 수 있음
-                        using (Stream streamLocal = new FileStream(sFilePathToWriteFileTo, FileMode.Create, FileAccess.Write, FileShare.None)) {
-                            // 스트림을 반복하며 버퍼에 파일을 받음
-                            int iByteSize = 0;
-                            byte[] byteBuffer = new byte[iSize];
-                            while ((iByteSize = streamRemote.Read(byteBuffer, 0, byteBuffer.Length)) > 0) {
-                                // 지정된 경로에 파일을 작성
-                                streamLocal.Write(byteBuffer, 0, iByteSize);
-                                iRunningByteTotal += iByteSize;
-
-                                // Unit 진행도를 최대 100으로 계산
-                                double dIndex = (double)(iRunningByteTotal);
-                                double dTotal = (double)byteBuffer.Length;
-                                double dProgressPercentage = (dIndex / dTotal);
-                                int iProgressPercentage = (int)(dProgressPercentage * 100);
-
-                                // Unit Progress Bar 동기화
-                                DownloadWorker.ReportProgress(iProgressPercentage);
-                            }
-                            // 파일 스트림 종료
-                            streamLocal.Close();
-                        }
-                        // 원격 서버와의 연결 종료
-                        streamRemote.Close();
-                    }
-                }
-            } catch {
-                DownloadWorker.CancelAsync();
-                if (string.Compare(sMode, "Patch") == 0)
-                    MessageBox.Show(sFileList[sCurrentFileIndex] + " 파일을 다운로드할 수 없습니다.");
-                else if (string.Compare(sMode, "Update") == 0)
-                    MessageBox.Show("런처 업데이트에 실패했습니다.");
-                Application.Exit();
+        private void DownloadPatchFiles_Completed(object sender, AsyncCompletedEventArgs e) {
+            PatchFileIndex++;
+            if (e.Cancelled) {
+                PercentageLabel.Text = "패치가 취소되었습니다.";
+                this.TopMost = true;
+                this.TopMost = false;
+                SetButtonsToDefault();
+            } else if (PatchFileIndex >= PatchFileList.Length) {
+                GameStart.Start();
             }
         }
 
-        private void DownloadWorker_ProgressChanged(object sender, ProgressChangedEventArgs e) {
-            // Unit Progress Bar 동기화
+        private void DownloadPatchFiles_ProgressChanged(object sender, DownloadProgressChangedEventArgs e) {
+            // Unit Progress Bar 갱신
             SetProgressBar(0, e.ProgressPercentage);
+            // Total Progress Bar 갱신
+            SetProgressBar(1, (int)((PatchFileIndex - 1 + (e.ProgressPercentage / 100 * PatchFileIndex)) * 100 / PatchFileList.Length));
+        }
 
-            if (string.Compare(sMode, "Update") == 0) {
-                // Total Progress Bar 동기화
-                SetProgressBar(1, e.ProgressPercentage);
+        private void DownloadPatchFiles(string host, string dest, string[] filelist, int index = 0) {
+            PatchFileList = filelist;
+            PatchFileIndex = index;
+
+            // PercentageLabel 갱신
+            PercentageLabel.Text = "패치중: " + filelist[index];
+
+            using (var wc = new WebClient()) {
+                wc.DownloadFileCompleted += new AsyncCompletedEventHandler(DownloadPatchFiles_Completed);
+                wc.DownloadProgressChanged += new DownloadProgressChangedEventHandler(DownloadPatchFiles_ProgressChanged);
+                wc.DownloadFileAsync(new Uri(host + "/" + filelist[index]), dest + "/" + filelist[index]);
             }
         }
 
-        private void DownloadWorker_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e) {
-            if (string.Compare(sMode, "Patch") == 0) {
-                // 작업이 취소되지 않았고, 다운로드할 파일이 남아 있으면
-                if (!e.Cancelled && sCurrentFileIndex < sFinalIndex) {
-                    // 인덱스 증가
-                    sCurrentFileIndex++;
-                    // 다운로드할 파일의 URL
-                    sUrlToReadFileFrom = sHost + "/" + sFileList[sCurrentFileIndex].Replace('\\', '/');
-                    // 파일을 저장할 경로 + 이름
-                    sFilePathToWriteFileTo = Path.Combine(GetGamePath(), sFileList[sCurrentFileIndex]);
-
-                    // Total Progress Bar 동기화
-                    SetProgressBar(1, (int)((sCurrentFileIndex - 1) * 100 / sFinalIndex));
-                    // PercentageLabel 동기화
-                    PercentageLabel.Text = "패치중: " + sFileList[sCurrentFileIndex];
-
-                    // DownloadWorker 실행
-                    DownloadWorker.RunWorkerAsync();
-                }
-                else if (sCurrentFileIndex >= sFinalIndex)
-                    GameStart.Start();
-                else {
-                    PercentageLabel.Text = "패치가 취소되었습니다.";
-                    this.TopMost = true;
-                    this.TopMost = false;
-                }
+        private void LauncherUpdate_Completed(object sender, AsyncCompletedEventArgs e) {
+            if (e.Cancelled) {
+                PercentageLabel.Text = "업데이트가 취소되었습니다.";
+                this.TopMost = true;
+                this.TopMost = false;
+                SetButtonsToDefault();
+            } else if (GetInitLevel() > 0) {
+                GameStart.Start();
+            } else {
+                RunNewLauncher();
             }
-            else if (string.Compare(sMode, "Update") == 0) {
-                if (e.Cancelled) {
-                    PercentageLabel.Text = "업데이트가 취소되었습니다.";
-                    this.TopMost = true;
-                    this.TopMost = false;
-                } else {
-                    if (GetInitLevel() > 0)
-                        GameStart.Start();
-                    else
-                        RunNewLauncher();
-                }
+        }
+
+        private void LauncherUpdate_ProgressChanged(object sender, DownloadProgressChangedEventArgs e) {
+            // Unit Progress Bar 갱신
+            SetProgressBar(0, e.ProgressPercentage);
+            // Total Progress Bar 갱신
+            SetProgressBar(1, e.ProgressPercentage);
+        }
+
+        private void UpdateLauncher() {
+            string host = Program.LauncherURL + "/launcher/" + Program.LauncherFileName;
+            string dest = Path.Combine(Program.Path_Setup,
+                (isExecutedByLauncher()) ? Program.UpdaterFileName : Program.LauncherFileName);
+            NewLauncherPath = dest;
+
+            // PercentageLabel 갱신
+            PercentageLabel.Text = "최신 런처 설치중";
+            
+            // 경로 생성
+            try {
+                if (!Directory.Exists(Program.Path_Setup))
+                    Directory.CreateDirectory(Program.Path_Setup);
+            } catch { }
+
+            // 파일이 이미 존재할 시 삭제
+            try {
+                if (File.Exists(dest))
+                    File.Delete(dest);
+            } catch { }
+
+            using (var wc = new WebClient()) {
+                wc.DownloadFileCompleted += new AsyncCompletedEventHandler(LauncherUpdate_Completed);
+                wc.DownloadProgressChanged += new DownloadProgressChangedEventHandler(LauncherUpdate_ProgressChanged);
+                wc.DownloadFileAsync(new Uri(host), dest);
             }
         }
         #endregion
 
         #region  < 게임 구성 파일 변조 검사 > 
-        private string[] DissimilarFiles = new string[30];
+        private List<string> DissimilarFiles;
 
         private bool CompareMD5OfGameFile(string listurl) {
             Uri url;
@@ -638,8 +578,7 @@ namespace Los_Angeles_Role_Play
             }
 
             // DissimilarFiles 초기화
-            for (int i = 0; i < DissimilarFiles.Length; i++)
-                DissimilarFiles[i] = String.Empty;
+            DissimilarFiles = new List<string>();
 
             // 서버에 저장된 파일과 동일한 것인지 검사
             int dcount = 0;
@@ -647,7 +586,7 @@ namespace Los_Angeles_Role_Play
                 string[] sdata = fdata[i].Split(',');
                 if (GetMD5OfFile(Path.Combine(GetGamePath(), sdata[0])).ToUpper() != sdata[1].ToUpper()) {
                     Debug.Print("<DF> " + sdata[0] + ": " + GetMD5OfFile(Path.Combine(GetGamePath(), sdata[0])).ToUpper());
-                    DissimilarFiles[dcount] = sdata[0];
+                    DissimilarFiles.Add(sdata[0]);
                     dcount++;
                 }
             }
@@ -659,15 +598,7 @@ namespace Los_Angeles_Role_Play
         }
 
         private string[] GetDissimilarFiles() {
-            return DissimilarFiles;
-        }
-
-        private int GetNumberOfDissimilarFiles() {
-            int dcount = 0;
-            for (int i = 0; i < DissimilarFiles.Length; i++)
-                if (DissimilarFiles[i] != null && DissimilarFiles[i].Length > 0)
-                    dcount++;
-            return dcount;
+            return DissimilarFiles.ToArray();
         }
         #endregion
 
@@ -681,28 +612,23 @@ namespace Los_Angeles_Role_Play
                 blocked = true;
             if (!CompareMD5OfGameFile(Program.LauncherURL + "/getfilelist.php?type=patch") && blockdissimilarfiles) {
                 blocked = true;
-                // 오류 메시지 출력
-                alert("게임 구성 파일이 변조되었습니다.", true);
-                // 디버그
-                for (int i = 0; i < GetNumberOfDissimilarFiles(); i++)
-                    Debug.Print("DissimilarFiles[" + i + "]: " + GetDissimilarFiles()[i]);
-            }
-            if (blocked) {
                 // 게임 강제종료
                 KillGameProcess();
                 // 하단 버튼 설정
                 Button_1_1.Text = "종료";
                 SetButtonEvent(Button_1_1, Application.Exit);
                 ShowButtons(1);
-                return true;
+                // 오류 메시지 출력
+                alert("게임 구성 파일이 변조되었습니다.", true);
             }
-            return false;
+            return blocked;
         }
 
         private bool AntiCheat() {
             FileInfo gtasa = new FileInfo(Path.Combine(GetGamePath(), "gta_sa.exe"));
             double filesize = Math.Round((double)(gtasa.Length / 1000000));
             if (filesize < 13 || filesize > 15) {
+                KillGameProcess();
                 alert("GTA:SA 실행 파일이 비정상적입니다.", false);
                 return true;
             }
@@ -722,7 +648,7 @@ namespace Los_Angeles_Role_Play
                 KillGameProcess();
                 // 안내 메시지 작성
                 string msg = "다음 파일들이 이동되었습니다.\n";
-                string aufcontainer = Path.Combine(Program.Path_UAF, DateTime.Now.ToString("yyMMdd HHmmss"));
+                string aufcontainer = Path.Combine(Program.Path_UAF, DateTime.Now.ToString("yy년 MM월 dd일 HH:mm-ss"));
                 for (int i = 0; i < auflist.Length; i++) {
                     string aufname = auflist[i].Split(',')[0]; // 파일 이름
                     string orgpath = Path.Combine(dirlist[i], aufname); // 원본 경로
@@ -968,11 +894,11 @@ namespace Los_Angeles_Role_Play
 
         #region < 암호화 >
         private string GetEncryptKey() {
-            return "LARP2009";
+            return ".oKd_WTPKbJLmm0;";
         }
 
         private string AESEncrypt256(string InputText, string Key) {
-            string TextToEncrypt = "LARP" + InputText + "SEONGBUM";
+            string TextToEncrypt = "9[9I$0le" + InputText + "[rDr8l-6";
             RijndaelManaged RijndaelCipher = new RijndaelManaged();
 
             // 입력받은 문자열을 바이트 배열로 변환  

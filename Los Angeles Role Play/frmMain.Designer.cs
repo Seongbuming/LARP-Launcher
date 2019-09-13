@@ -60,14 +60,6 @@
             this.ButtonContainer3.SuspendLayout();
             this.SuspendLayout();
             // 
-            // DownloadWorker
-            // 
-            this.DownloadWorker.WorkerReportsProgress = true;
-            this.DownloadWorker.WorkerSupportsCancellation = true;
-            this.DownloadWorker.DoWork += new System.ComponentModel.DoWorkEventHandler(this.DownloadWorker_DoWork);
-            this.DownloadWorker.ProgressChanged += new System.ComponentModel.ProgressChangedEventHandler(this.DownloadWorker_ProgressChanged);
-            this.DownloadWorker.RunWorkerCompleted += new System.ComponentModel.RunWorkerCompletedEventHandler(this.DownloadWorker_RunWorkerCompleted);
-            // 
             // UnitProgressBar_Background
             // 
             this.UnitProgressBar_Background.BackColor = System.Drawing.Color.Silver;
@@ -215,7 +207,7 @@
             // 
             // GameExit
             // 
-            this.GameExit.Interval = 1000;
+            this.GameExit.Interval = 3000;
             this.GameExit.Tick += new System.EventHandler(this.GameExit_Tick);
             // 
             // Button_1_1
