@@ -105,6 +105,8 @@ namespace Los_Angeles_Role_Play
         #endregion
 
         #region < 게임 실행 >
+        string StartedGamePath;
+
         private void GameStart_Tick(object sender, EventArgs e) {
             GameStart.Stop();
             KillGameProcess();
@@ -183,7 +185,8 @@ namespace Los_Angeles_Role_Play
                     } else {
                         PercentageLabel.Text = "게임에 접속중입니다.";
                         // SAMP 실행
-                        Process.Start(Path.Combine(GetGamePath(), "samp.exe"), "server.la-rp.co.kr");
+                        StartedGamePath = GetGamePath();
+                        Process.Start(Path.Combine(StartedGamePath, "samp.exe"), "server.la-rp.co.kr");
                         GameExit.Start();
                     }
                     break;
@@ -192,13 +195,12 @@ namespace Los_Angeles_Role_Play
         }
 
         private void GameExit_Tick(object sender, EventArgs e) {
-            if (IsProcessRunning("gta_sa")) {
+            if (IsGameRunning()) {
                 if (ExitLevel == 0)
                     this.Hide();
                 BlockUnauthorizedPrograms(true);
                 ExitLevel = 1;
-            }
-            else if (ExitLevel > 0) {
+            } else if (ExitLevel > 0) {
                 ExitLevel = 0;
                 try {
                     string sampchatlogpath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "GTA San Andreas User Files", "SAMP");
@@ -229,6 +231,10 @@ namespace Los_Angeles_Role_Play
 
         private int GetInitLevel() {
             return InitLevel;
+        }
+
+        private string GetStartedGamePath() {
+            return StartedGamePath;
         }
         #endregion
 
@@ -367,6 +373,7 @@ namespace Los_Angeles_Role_Play
         string[] sFileList;
         string sHost, sUrlToReadFileFrom, sFilePathToWriteFileTo;
         int sCurrentFileIndex, sFinalIndex;*/
+        string PatchFileHost, PatchFileDest;
         string[] PatchFileList;
         int PatchFileIndex;
         string NewLauncherPath = String.Empty;
@@ -482,6 +489,8 @@ namespace Los_Angeles_Role_Play
                 SetButtonsToDefault();
             } else if (PatchFileIndex >= PatchFileList.Length) {
                 GameStart.Start();
+            } else {
+                DownloadPatchFiles(PatchFileHost, PatchFileDest, PatchFileList, PatchFileIndex);
             }
         }
 
@@ -489,10 +498,12 @@ namespace Los_Angeles_Role_Play
             // Unit Progress Bar 갱신
             SetProgressBar(0, e.ProgressPercentage);
             // Total Progress Bar 갱신
-            SetProgressBar(1, (int)((PatchFileIndex - 1 + (e.ProgressPercentage / 100 * PatchFileIndex)) * 100 / PatchFileList.Length));
+            SetProgressBar(1, (int)((PatchFileIndex + e.ProgressPercentage / 100) * 100 / PatchFileList.Length));
         }
 
         private void DownloadPatchFiles(string host, string dest, string[] filelist, int index = 0) {
+            PatchFileHost = host;
+            PatchFileDest = dest;
             PatchFileList = filelist;
             PatchFileIndex = index;
 
@@ -648,7 +659,7 @@ namespace Los_Angeles_Role_Play
                 KillGameProcess();
                 // 안내 메시지 작성
                 string msg = "다음 파일들이 이동되었습니다.\n";
-                string aufcontainer = Path.Combine(Program.Path_UAF, DateTime.Now.ToString("yy년 MM월 dd일 HH:mm-ss"));
+                string aufcontainer = Path.Combine(Program.Path_UAF, DateTime.Now.ToString("yyyy-MM-dd HHmmss"));
                 for (int i = 0; i < auflist.Length; i++) {
                     string aufname = auflist[i].Split(',')[0]; // 파일 이름
                     string orgpath = Path.Combine(dirlist[i], aufname); // 원본 경로
@@ -736,9 +747,9 @@ namespace Los_Angeles_Role_Play
             }
             foreach (FileInfo finfo in dinfo.GetFiles())
                 foreach (string cextension in AllowedExtension)
-                    if (finfo.Extension.ToUpper() == cextension.ToUpper()) {
+                    if (string.Compare(finfo.Extension.ToUpper(), cextension.ToUpper()) == 0) {
                         string hash = GetMD5OfFile(finfo.FullName).ToUpper();
-                        if (!allowlist.ToUpper().Contains("," + hash)) {
+                        if (!allowlist.ToUpper().Contains("," + hash) && string.Compare(finfo.Name.ToUpper(), "GTA_SA.EXE") != 0) {
                             uaflist += finfo.Name + "," + hash + "|";
                             dirlist += finfo.Directory + "|";
                         }
@@ -843,12 +854,17 @@ namespace Los_Angeles_Role_Play
         private string GetCurrentProcessName() {
             IntPtr handle = IntPtr.Zero;
             uint pid = 0;
-            for(;;) {
-                handle = GetForegroundWindow();
-                GetWindowThreadProcessId(handle, out pid);
-                return Process.GetProcessById((int)pid).ProcessName;
+            handle = GetForegroundWindow();
+            GetWindowThreadProcessId(handle, out pid);
+            return Process.GetProcessById((int)pid).ProcessName;
+        }
+
+        private bool IsGameRunning() {
+            foreach (Process proc in Process.GetProcessesByName("gta_sa")) {
+                if (string.Compare(proc.MainModule.FileName.ToUpper(), Path.Combine(GetStartedGamePath(), "gta_sa.exe").ToUpper()) == 0)
+                    return true;
             }
-            return String.Empty;
+            return false;
         }
 
         private bool IsProcessRunning(string pname) {
