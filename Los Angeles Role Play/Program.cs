@@ -4,12 +4,13 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.IO;
+using System.Threading;
 
 namespace Los_Angeles_Role_Play
 {
     static class Program
     {
-        public static bool TestMode = true;
+        public static bool TestMode = false;
         public static string InfowebURL = "http://la-rp.co.kr";
         public static string ForumURL = "http://la-rp.co.kr";
         public static string LauncherURL = "http://la-rp.seongbum.com";
@@ -24,11 +25,19 @@ namespace Los_Angeles_Role_Play
         /// 해당 응용 프로그램의 주 진입점입니다.
         /// </summary>
         [STAThread]
-        static void Main(string[] args)
-        {
-            Application.EnableVisualStyles();
-            Application.SetCompatibleTextRenderingDefault(false);
-            Application.Run(new frmMain(args));
+        static void Main(string[] args) {
+            // 중복 실행 방지
+            bool bnew;
+            Mutex mutex = new Mutex(true, "MutexName", out bnew);
+            if (bnew) {
+                Application.EnableVisualStyles();
+                Application.SetCompatibleTextRenderingDefault(false);
+                Application.Run(new frmMain(args));
+                mutex.ReleaseMutex();
+            } else {
+                MessageBox.Show("LARP 런처가 이미 실행중입니다.");
+                Application.Exit();
+            }
         }
     }
 }

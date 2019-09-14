@@ -207,7 +207,7 @@
             // 
             // GameExit
             // 
-            this.GameExit.Interval = 3000;
+            this.GameExit.Interval = 1000;
             this.GameExit.Tick += new System.EventHandler(this.GameExit_Tick);
             // 
             // Button_1_1
