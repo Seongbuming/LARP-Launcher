@@ -152,6 +152,7 @@ namespace Los_Angeles_Role_Play
                     ResetAuthorizedFiles();
                     LoadAuthorizedFilesFromServer(Program.LauncherURL + "/getfilelist.php?type=allowedfiles");
                     LoadAuthorizedFilesFromServer(Program.LauncherURL + "/getfilelist.php?type=patch");
+                    LoadAuthorizedFilesFromServer(Program.LauncherURL + "/getfilelist.php?type=launcher");
                     if (BlockUnauthorizedPrograms())
                         return;
                     // 검사 및 패치
