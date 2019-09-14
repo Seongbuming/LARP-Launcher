@@ -28,7 +28,8 @@ namespace Los_Angeles_Role_Play
         static void Main(string[] args) {
             // 중복 실행 방지
             bool bnew;
-            Mutex mutex = new Mutex(true, "MutexName", out bnew);
+            string mutexname = (IsExecutedByLauncher()) ? "LARPLauncher" : "LARPUpdater";
+            Mutex mutex = new Mutex(true, mutexname, out bnew);
             if (bnew) {
                 Application.EnableVisualStyles();
                 Application.SetCompatibleTextRenderingDefault(false);
@@ -38,6 +39,11 @@ namespace Los_Angeles_Role_Play
                 MessageBox.Show("LARP 런처가 이미 실행중입니다.");
                 Application.Exit();
             }
+        }
+
+        static public bool IsExecutedByLauncher() {
+            // 런처로 실행되었는지 여부
+            return (string.Compare(Application.ExecutablePath, Path.Combine(Program.Path_Setup, Program.LauncherFileName), true) == 0);
         }
     }
 }

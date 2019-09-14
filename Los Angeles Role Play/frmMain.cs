@@ -97,11 +97,6 @@ namespace Los_Angeles_Role_Play
         private bool GetDirectStart() {
             return directstart;
         }
-
-        private bool isExecutedByLauncher() {
-            // 런처로 실행되었는지 여부
-            return (string.Compare(Application.ExecutablePath, Path.Combine(Program.Path_Setup, Program.LauncherFileName), true) == 0);
-        }
         #endregion
 
         #region < 게임 실행 >
@@ -436,7 +431,7 @@ namespace Los_Angeles_Role_Play
             // 현재 버전의 Hash를 가져옴
             string ehash = GetMD5OfFile(Application.ExecutablePath).ToUpper();
 
-            if ((string.Compare(newhash, ehash, true) == 0 && isExecutedByLauncher()) || Program.TestMode) { // 런처가 최신 버전인 경우
+            if ((string.Compare(newhash, ehash, true) == 0 && Program.IsExecutedByLauncher()) || Program.TestMode) { // 런처가 최신 버전인 경우
                 if (GetInitLevel() > 0) {
                     GameStart.Start();
                 } else {
@@ -546,7 +541,7 @@ namespace Los_Angeles_Role_Play
         private void UpdateLauncher() {
             string host = Program.LauncherURL + "/launcher/" + Program.LauncherFileName;
             string dest = Path.Combine(Program.Path_Setup,
-                (isExecutedByLauncher()) ? Program.UpdaterFileName : Program.LauncherFileName);
+                (Program.IsExecutedByLauncher()) ? Program.UpdaterFileName : Program.LauncherFileName);
             NewLauncherPath = dest;
 
             // PercentageLabel 갱신
@@ -644,7 +639,7 @@ namespace Los_Angeles_Role_Play
         private bool AntiCheat() {
             FileInfo gtasa = new FileInfo(Path.Combine(GetGamePath(), "gta_sa.exe"));
             double filesize = Math.Round((double)(gtasa.Length / 1000000));
-            if (filesize < 13 || filesize > 15) {
+            if (filesize < 14 || filesize > 16) {
                 KillGameProcess();
                 alert("GTA:SA 실행 파일이 비정상적입니다.", false);
                 return true;
