@@ -135,7 +135,7 @@ namespace Los_Angeles_Role_Play
                         Button_2_1.Text = "인포웹";
                         Button_2_2.Text = "종료";
                         SetButtonEvent(Button_2_1, ButtonEvent_OpenInfoweb);
-                        SetButtonEvent(Button_2_2, Application.Exit);
+                        SetButtonEvent(Button_2_2, ButtonEvent_Exit);
                         ShowButtons(2);
                         this.TopMost = true;
                         this.TopMost = false;
@@ -179,7 +179,7 @@ namespace Los_Angeles_Role_Play
                         Button_2_1.Text = "인포웹";
                         Button_2_2.Text = "종료";
                         SetButtonEvent(Button_2_1, ButtonEvent_OpenInfoweb);
-                        SetButtonEvent(Button_2_2, Application.Exit);
+                        SetButtonEvent(Button_2_2, ButtonEvent_Exit);
                         ShowButtons(2);
                         this.TopMost = true;
                         this.TopMost = false;
@@ -217,7 +217,7 @@ namespace Los_Angeles_Role_Play
                 Button_2_1.Text = "열기";
                 Button_2_2.Text = "종료";
                 SetButtonEvent(Button_2_1, ButtonEvent_OpenChatLog);
-                SetButtonEvent(Button_2_2, Application.Exit);
+                SetButtonEvent(Button_2_2, ButtonEvent_Exit);
                 ShowButtons(2);
                 this.Show();
                 this.TopMost = true;
@@ -309,8 +309,13 @@ namespace Los_Angeles_Role_Play
             Button_3_3.Text = "종료";
             SetButtonEvent(Button_3_1, ButtonEvent_GameStart);
             SetButtonEvent(Button_3_2, ButtonEvent_SetNickname);
-            SetButtonEvent(Button_3_3, Application.Exit);
+            SetButtonEvent(Button_3_3, ButtonEvent_Exit);
             ShowButtons(3);
+        }
+
+        private void ButtonEvent_Exit() {
+            KillGameProcess();
+            Application.Exit();
         }
 
         private void ButtonEvent_OpenInfoweb() {
@@ -400,7 +405,7 @@ namespace Los_Angeles_Role_Play
 
             PercentageLabel.Text = "업데이트 확인중";
             Button_1_1.Text = "종료";
-            SetButtonEvent(Button_1_1, Application.Exit);
+            SetButtonEvent(Button_1_1, ButtonEvent_Exit);
             ShowButtons(1);
 
             try {
@@ -421,7 +426,7 @@ namespace Los_Angeles_Role_Play
                 Button_2_1.Text = "인포웹";
                 Button_2_2.Text = "종료";
                 SetButtonEvent(Button_2_1, ButtonEvent_OpenInfoweb);
-                SetButtonEvent(Button_2_2, Application.Exit);
+                SetButtonEvent(Button_2_2, ButtonEvent_Exit);
                 ShowButtons(2);
                 this.TopMost = true;
                 this.TopMost = false;
@@ -628,7 +633,7 @@ namespace Los_Angeles_Role_Play
                 KillGameProcess();
                 // 하단 버튼 설정
                 Button_1_1.Text = "종료";
-                SetButtonEvent(Button_1_1, Application.Exit);
+                SetButtonEvent(Button_1_1, ButtonEvent_Exit);
                 ShowButtons(1);
                 // 오류 메시지 출력
                 alert("게임 구성 파일이 변조되었습니다.", true);
@@ -682,7 +687,7 @@ namespace Los_Angeles_Role_Play
                 Button_2_1.Text = "보기";
                 Button_2_2.Text = "종료";
                 SetButtonEvent(Button_2_1, () => { ButtonEvent_OpenPath(aufcontainer); });
-                SetButtonEvent(Button_2_2, Application.Exit);
+                SetButtonEvent(Button_2_2, ButtonEvent_Exit);
                 ShowButtons(2);
                 // 최상단
                 this.TopMost = true;
