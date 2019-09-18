@@ -7,8 +7,8 @@
     <ProjectGuid>{90EA4CC9-4A98-4755-942C-E6ABCA4713AB}</ProjectGuid>
     <OutputType>WinExe</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>LARP</RootNamespace>
-    <AssemblyName>LARP</AssemblyName>
+    <RootNamespace>LARPLauncher</RootNamespace>
+    <AssemblyName>LARPLauncher</AssemblyName>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <PublishUrl>publish\</PublishUrl>
