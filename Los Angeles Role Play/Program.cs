@@ -13,7 +13,7 @@ namespace Los_Angeles_Role_Play
         public static bool TestMode = false;
         public static string InfowebURL = "http://la-rp.co.kr";
         public static string ForumURL = "http://la-rp.co.kr";
-        public static string LauncherURL = "http://la-rp.seongbum.com";
+        public static string LauncherURL = "http://launcher.la-rp.co.kr";
         public static string LauncherFileName = "LARPLauncher.exe";
         public static string UpdaterFileName = "LARPUpdater.exe";
         public static string Path_LARP = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "LARP");

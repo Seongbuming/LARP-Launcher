@@ -145,13 +145,13 @@ namespace Los_Angeles_Role_Play
                 case 3: // 게임 구성 파일 변조 검사 및 패치
                     // 비인가 프로그램 차단 (파일 변조 검사 제외)
                     ResetAuthorizedFiles();
-                    LoadAuthorizedFilesFromServer(Program.LauncherURL + "/getfilelist.php?type=allowedfiles");
-                    LoadAuthorizedFilesFromServer(Program.LauncherURL + "/getfilelist.php?type=patch");
-                    LoadAuthorizedFilesFromServer(Program.LauncherURL + "/getfilelist.php?type=launcher");
+                    LoadAuthorizedFilesFromServer(Program.LauncherURL + "/getfilelist.do?type=allowedfiles");
+                    LoadAuthorizedFilesFromServer(Program.LauncherURL + "/getfilelist.do?type=patch");
+                    LoadAuthorizedFilesFromServer(Program.LauncherURL + "/getfilelist.do?type=launcher");
                     if (BlockUnauthorizedPrograms())
                         return;
                     // 검사 및 패치
-                    if (!CompareMD5OfGameFile(Program.LauncherURL + "/getfilelist.php?type=patch"))
+                    if (!CompareMD5OfGameFile(Program.LauncherURL + "/getfilelist.do?type=patch"))
                         StartPatch(Program.LauncherURL + "/patch", GetDissimilarFiles());
                     else
                         // 게임 실행 단계 진행
@@ -405,7 +405,7 @@ namespace Los_Angeles_Role_Play
 
             try {
                 // 최신 런처의 Hash를 가져옴
-                url = new Uri(Program.LauncherURL + "/getfilehash.php?name=launcher/" + Program.LauncherFileName);
+                url = new Uri(Program.LauncherURL + "/getfilehash.do?name=launcher/" + Program.LauncherFileName);
                 request = (HttpWebRequest)WebRequest.Create(url);
                 response = (HttpWebResponse)request.GetResponse();
                 statuscode = response.StatusCode;
@@ -622,7 +622,7 @@ namespace Los_Angeles_Role_Play
             bool blocked = false;
             if (AntiCheat() || AntiAUF())
                 blocked = true;
-            if (!CompareMD5OfGameFile(Program.LauncherURL + "/getfilelist.php?type=patch") && blockdissimilarfiles) {
+            if (!CompareMD5OfGameFile(Program.LauncherURL + "/getfilelist.do?type=patch") && blockdissimilarfiles) {
                 blocked = true;
                 // 게임 강제종료
                 KillGameProcess();
