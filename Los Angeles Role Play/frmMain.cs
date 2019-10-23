@@ -15,13 +15,16 @@ using System.Windows.Forms;
 using System.Runtime.InteropServices;
 using System.IO;
 using System.Text.RegularExpressions;
-using System.Security.Cryptography;
 using System.Diagnostics;
 using System.Net;
 using Microsoft.Win32;
 using System.Reflection;
 using System.Management;
 using System.Collections.Generic;
+using System.Security.Cryptography;
+using Newtonsoft.Json.Linq;
+using LARPLauncher.Security;
+using System.Net.Cache;
 
 namespace Los_Angeles_Role_Play
 {
@@ -101,6 +104,7 @@ namespace Los_Angeles_Role_Play
 
         #region < 게임 실행 >
         string StartedGamePath;
+        string CToken;
 
         private void GameStart_Tick(object sender, EventArgs e) {
             GameStart.Stop();
@@ -113,11 +117,13 @@ namespace Los_Angeles_Role_Play
                     HttpStatusCode[] statuscode = new HttpStatusCode[2];
                     try {
                         request = (HttpWebRequest)WebRequest.Create(new Uri(Program.InfowebURL));
+                        request.CachePolicy = new HttpRequestCachePolicy(HttpRequestCacheLevel.NoCacheNoStore);
                         response = (HttpWebResponse)request.GetResponse();
                         statuscode[0] = response.StatusCode;
                         response.Close();
 
                         request = (HttpWebRequest)WebRequest.Create(new Uri(Program.LauncherURL));
+                        request.CachePolicy = new HttpRequestCachePolicy(HttpRequestCacheLevel.NoCacheNoStore);
                         response = (HttpWebResponse)request.GetResponse();
                         statuscode[1] = response.StatusCode;
                         response.Close();
@@ -164,26 +170,30 @@ namespace Los_Angeles_Role_Play
                     // 닉네임 레지스트리 동기화
                     SaveUsernameToRegistry();
 
-                    if (GetNewLauncherPath() != String.Empty) {
+                    if(GetNewLauncherPath() != String.Empty) {
                         // URL Scheme
                         CreateUrlSchemeRegistry();
                         // 최신 런처 실행
                         RunNewLauncher();
-                    } else if (string.Compare(GetUsername(), "NULL") == 0) {
-                        PercentageLabel.Text = "설치 완료";
+                    } else if(string.Compare(GetUsername(), "NULL") == 0) {
                         Button_2_1.Text = "인포웹";
                         Button_2_2.Text = "종료";
                         SetButtonEvent(Button_2_1, ButtonEvent_OpenInfoweb);
                         SetButtonEvent(Button_2_2, ButtonEvent_Exit);
                         ShowButtons(2);
-                        this.TopMost = true;
-                        this.TopMost = false;
+                        alert("설치 완료", false);
+                    } else if (!GenerateToken(ref CToken, Program.LauncherURL + "/auth.do", "conn")) {
+                        Button_1_1.Text = "종료";
+                        SetButtonEvent(Button_1_1, ButtonEvent_Exit);
+                        ShowButtons(1);
+                        alert("접속 인증 실패", false);
                     } else {
                         PercentageLabel.Text = "게임에 접속중입니다.";
                         // SAMP 실행
                         StartedGamePath = GetGamePath();
                         Process.Start(Path.Combine(StartedGamePath, "samp.exe"), "server.la-rp.co.kr");
                         GameExit.Start();
+                        GameAuth.Start();
                     }
                     break;
             }
@@ -194,10 +204,12 @@ namespace Los_Angeles_Role_Play
             if (IsGameRunning()) {
                 if (ExitLevel == 0)
                     this.Hide();
-                BlockUnauthorizedPrograms(true);
                 ExitLevel = 1;
+
+                BlockUnauthorizedPrograms(true);
             } else if (ExitLevel > 0) {
                 ExitLevel = 0;
+                GameAuth.Stop();
                 try {
                     string sampchatlogpath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "GTA San Andreas User Files", "SAMP");
                     string larpchatlogfile = Path.Combine(Program.Path_ChatLog, "ChatLog" + DateTime.Now.ToString("-yyMMdd-HHmmss") + ".txt");
@@ -220,9 +232,86 @@ namespace Los_Angeles_Role_Play
             }
         }
 
+        private void GameAuth_Tick(object sender, EventArgs e) {
+            string ttoken = string.Empty;
+            if (GenerateToken(ref ttoken, Program.LauncherURL + "/auth.do", "freq")) {
+                JObject jobj = new JObject();
+                jobj.Add("Username", GetUsername());
+                jobj.Add("TToken", ttoken);
+                jobj.Add("CToken", CToken);
+                string json = jobj.ToString();
+                try {
+                    Uri uri = new Uri(Program.LauncherURL + "/renew.do");
+                    HttpWebRequest request = (HttpWebRequest)WebRequest.Create(uri);
+                    request.CachePolicy = new HttpRequestCachePolicy(HttpRequestCacheLevel.NoCacheNoStore);
+                    request.ContentType = "application/x-www-form-urlencoded";
+                    request.Method = "POST";
+
+                    string data = "data=" + Uri.EscapeDataString(Encryption.Encrypt(json, Config.getEncryptKey()));
+                    
+                    byte[] bytearray = Encoding.UTF8.GetBytes(data);
+                    Stream stream = request.GetRequestStream();
+                    stream.Write(bytearray, 0, bytearray.Length);
+                    stream.Close();
+
+                    HttpWebResponse response = (HttpWebResponse)request.GetResponse();
+                    string text = (new StreamReader(response.GetResponseStream(), Encoding.UTF8)).ReadToEnd().Trim();
+
+                    if(response.StatusCode == HttpStatusCode.OK && text.CompareTo("1") == 0) {
+                        response.Close();
+                        Debug.Print("토큰 갱신 성공");
+                    } else {
+                        response.Close();
+                        Debug.Print("토큰 갱신 실패: " + text);
+                    }
+                } catch {
+                    Debug.Print("토큰 갱신 중 오류 발생");
+                }
+            }
+        }
+
         private void StartGame() {
             InitLevel = 1;
             GameStart.Start();
+        }
+
+        private bool GenerateToken(ref string receiver, string tokenurl, string type) {
+            Uri uri;
+            HttpWebRequest request;
+            HttpWebResponse response;
+            string data;
+            byte[] bytearray;
+            receiver = string.Empty;
+
+            try {
+                uri = new Uri(tokenurl);
+                request = (HttpWebRequest)WebRequest.Create(uri);
+                request.CachePolicy = new HttpRequestCachePolicy(HttpRequestCacheLevel.NoCacheNoStore);
+                request.ContentType = "application/x-www-form-urlencoded";
+                request.Method = "POST";
+
+                data = "type=" + Uri.EscapeDataString(type)
+                    + "&data=" + Uri.EscapeDataString(Encryption.Encrypt(GetUsername(), Config.getEncryptKey()));
+
+                bytearray = Encoding.UTF8.GetBytes(data);
+                Stream stream = request.GetRequestStream();
+                stream.Write(bytearray, 0, bytearray.Length);
+                stream.Close();
+
+                response = (HttpWebResponse)request.GetResponse();
+                string token = (new StreamReader(response.GetResponseStream(), Encoding.UTF8)).ReadToEnd().Trim();
+                
+                if(response.StatusCode == HttpStatusCode.OK && token.CompareTo("0") != 0) {
+                    response.Close();
+                    receiver = token;
+                    return true;
+                }
+                response.Close();
+            } catch {
+                Debug.Print("접속 인증 중 오류 발생");
+            }
+
+            return false;
         }
 
         private int GetInitLevel() {
@@ -407,6 +496,7 @@ namespace Los_Angeles_Role_Play
                 // 최신 런처의 Hash를 가져옴
                 url = new Uri(Program.LauncherURL + "/getfilehash.do?name=launcher/" + Program.LauncherFileName);
                 request = (HttpWebRequest)WebRequest.Create(url);
+                request.CachePolicy = new HttpRequestCachePolicy(HttpRequestCacheLevel.NoCacheNoStore);
                 response = (HttpWebResponse)request.GetResponse();
                 statuscode = response.StatusCode;
                 newhash = (new StreamReader(response.GetResponseStream(), Encoding.UTF8)).ReadToEnd().ToUpper();
@@ -581,6 +671,7 @@ namespace Los_Angeles_Role_Play
                 // ex) samp.dll,64add3449fa874e17071c5149892ce07|SAMP\custom.img,8fc7f2ec79402a952d5b896b710b3a41|...
                 url = new Uri(listurl);
                 request = (HttpWebRequest)WebRequest.Create(url);
+                request.CachePolicy = new HttpRequestCachePolicy(HttpRequestCacheLevel.NoCacheNoStore);
                 response = (HttpWebResponse)request.GetResponse();
                 fdata = (new StreamReader(response.GetResponseStream(), Encoding.UTF8)).ReadToEnd().Split('|');
                 response.Close();
@@ -611,6 +702,26 @@ namespace Los_Angeles_Role_Play
 
         private string[] GetDissimilarFiles() {
             return DissimilarFiles.ToArray();
+        }
+
+        private string GetMD5OfFile(string filepath) {
+            if(File.Exists(filepath)) {
+                /*try {
+                    StringBuilder strMD5 = new StringBuilder();
+                    FileStream fs = new FileStream(filepath, FileMode.Open);
+                    byte[] byteResult = (new MD5CryptoServiceProvider()).ComputeHash(fs);
+                    fs.Close();
+                    for (int i = 0; i < byteResult.Length; i++)
+                        strMD5.Append(byteResult[i].ToString("X2"));
+                    return strMD5.ToString();
+                } catch {
+                    MessageBox.Show(filepath + " 파일이 실행중입니다.", "오류", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                }*/
+                using(var fs = File.OpenRead(filepath))
+                using(var md5 = new MD5CryptoServiceProvider())
+                    return string.Join("", md5.ComputeHash(fs).ToArray().Select(i => i.ToString("X2")));
+            }
+            return string.Empty;
         }
         #endregion
 
@@ -650,10 +761,12 @@ namespace Los_Angeles_Role_Play
         private bool AntiAUF() {
             string gamepath = GetGamePath();
             string[] carr = GetUnauthorizedFiles(gamepath);
-            Debug.Print("AUF: " + carr[0]);
-            Debug.Print("DIR: " + carr[1]);
             string[] auflist = carr[0].Split('|');
             string[] dirlist = carr[1].Split('|');
+            if (carr[0].Length > 0 || carr[1].Length > 0) {
+                Debug.Print("AUF: " + carr[0]);
+                Debug.Print("DIR: " + carr[1]);
+            }
 
             if (carr[0].Length > 0 && auflist.Length > 0) {
                 // 게임 강제종료
@@ -708,6 +821,7 @@ namespace Los_Angeles_Role_Play
                 // 서버에 저장된 클레오 파일의 화이트리스트(Name,Hash)을 가져옴
                 url = new Uri(listurl);
                 request = (HttpWebRequest)WebRequest.Create(url);
+                request.CachePolicy = new HttpRequestCachePolicy(HttpRequestCacheLevel.NoCacheNoStore);
                 response = (HttpWebResponse)request.GetResponse();
                 allowlist = (new StreamReader(response.GetResponseStream(), Encoding.UTF8)).ReadToEnd();
 
@@ -809,28 +923,6 @@ namespace Los_Angeles_Role_Play
         }
         #endregion
 
-        #region  < 파일 해시 > 
-        private string GetMD5OfFile(string filepath) {
-            if (File.Exists(filepath)) {
-                /*try {
-                    StringBuilder strMD5 = new StringBuilder();
-                    FileStream fs = new FileStream(filepath, FileMode.Open);
-                    byte[] byteResult = (new MD5CryptoServiceProvider()).ComputeHash(fs);
-                    fs.Close();
-                    for (int i = 0; i < byteResult.Length; i++)
-                        strMD5.Append(byteResult[i].ToString("X2"));
-                    return strMD5.ToString();
-                } catch {
-                    MessageBox.Show(filepath + " 파일이 실행중입니다.", "오류", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                }*/
-                using (var fs = File.OpenRead(filepath))
-                using (var md5 = new MD5CryptoServiceProvider())
-                    return string.Join("", md5.ComputeHash(fs).ToArray().Select(i => i.ToString("X2")));
-            }
-            return string.Empty;
-        }
-        #endregion
-
         #region < 하드 디스크 일련번호 >
         private string[] GetHDSerials() {
             ManagementObjectSearcher searcher = new ManagementObjectSearcher("SELECT * FROM Win32_PhysicalMedia");
@@ -906,77 +998,6 @@ namespace Los_Angeles_Role_Play
             reg.SetValue("Url Protocol", "");
             reg = reg.CreateSubKey(@"shell\open\command", RegistryKeyPermissionCheck.ReadWriteSubTree);
             reg.SetValue("", "\"" + Path.Combine(Program.Path_Setup, Program.LauncherFileName) + "\"" + " \"%1\"");
-        }
-        #endregion
-
-        #region < 암호화 >
-        private string GetEncryptKey() {
-            return ".oKd_WTPKbJLmm0;";
-        }
-
-        private string AESEncrypt256(string InputText, string Key) {
-            string TextToEncrypt = "9[9I$0le" + InputText + "[rDr8l-6";
-            RijndaelManaged RijndaelCipher = new RijndaelManaged();
-
-            // 입력받은 문자열을 바이트 배열로 변환  
-            byte[] PlainText = System.Text.Encoding.Unicode.GetBytes(TextToEncrypt);
-
-            // 딕셔너리 공격을 대비해서 키를 더 풀기 어렵게 만들기 위해서 Salt를 사용한다.  
-            byte[] Salt = Encoding.ASCII.GetBytes(Key.Length.ToString());
-
-            PasswordDeriveBytes SecretKey = new PasswordDeriveBytes(Key, Salt);
-
-            // Create a encryptor from the existing SecretKey bytes.  
-            // encryptor 객체를 SecretKey로부터 만든다.  
-            // Secret Key에는 32바이트  
-            // Initialization Vector로 16바이트를 사용  
-            ICryptoTransform Encryptor = RijndaelCipher.CreateEncryptor(SecretKey.GetBytes(32), SecretKey.GetBytes(16));
-
-            MemoryStream memoryStream = new MemoryStream();
-
-            // CryptoStream객체를 암호화된 데이터를 쓰기 위한 용도로 선언  
-            CryptoStream cryptoStream = new CryptoStream(memoryStream, Encryptor, CryptoStreamMode.Write);
-
-            cryptoStream.Write(PlainText, 0, PlainText.Length);
-
-            cryptoStream.FlushFinalBlock();
-
-            byte[] CipherBytes = memoryStream.ToArray();
-
-            memoryStream.Close();
-            cryptoStream.Close();
-
-            return Convert.ToBase64String(CipherBytes);
-        }
-
-        private string AESDecrypt256(string InputText, string Key) {
-            RijndaelManaged RijndaelCipher = new RijndaelManaged();
-
-            byte[] EncryptedData = Convert.FromBase64String(InputText);
-            byte[] Salt = Encoding.ASCII.GetBytes(Key.Length.ToString());
-
-            PasswordDeriveBytes SecretKey = new PasswordDeriveBytes(Key, Salt);
-
-            // Decryptor 객체를 만든다.  
-            ICryptoTransform Decryptor = RijndaelCipher.CreateDecryptor(SecretKey.GetBytes(32), SecretKey.GetBytes(16));
-
-            MemoryStream memoryStream = new MemoryStream(EncryptedData);
-
-            // 데이터 읽기 용도의 cryptoStream객체  
-            CryptoStream cryptoStream = new CryptoStream(memoryStream, Decryptor, CryptoStreamMode.Read);
-
-            // 복호화된 데이터를 담을 바이트 배열을 선언한다.  
-            byte[] PlainText = new byte[EncryptedData.Length];
-
-            int DecryptedCount = cryptoStream.Read(PlainText, 0, PlainText.Length);
-
-            memoryStream.Close();
-            cryptoStream.Close();
-
-            string DecryptedText = Encoding.Unicode.GetString(PlainText, 0, DecryptedCount);
-            DecryptedText = DecryptedText.Substring(4, DecryptedText.Length - 12); // LARP + SEONGBUM = 12
-
-            return DecryptedText;
         }
         #endregion
     }

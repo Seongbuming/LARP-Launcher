@@ -53,6 +53,7 @@
             this.Button_3_2 = new System.Windows.Forms.Label();
             this.Button_3_1 = new System.Windows.Forms.Label();
             this.Button_3_3 = new System.Windows.Forms.Label();
+            this.GameAuth = new System.Windows.Forms.Timer(this.components);
             this.UnitProgressBar_Background.SuspendLayout();
             this.TotalProgressBar_Background.SuspendLayout();
             this.ButtonContainer2.SuspendLayout();
@@ -81,7 +82,7 @@
             // PercentageLabel
             // 
             this.PercentageLabel.BackColor = System.Drawing.Color.Transparent;
-            this.PercentageLabel.Font = new System.Drawing.Font("Malgun Gothic Semilight", 15.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(129)));
+            this.PercentageLabel.Font = new System.Drawing.Font("맑은 고딕 Semilight", 15.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(129)));
             this.PercentageLabel.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(100)))), ((int)(((byte)(100)))), ((int)(((byte)(100)))));
             this.PercentageLabel.Location = new System.Drawing.Point(50, 96);
             this.PercentageLabel.Name = "PercentageLabel";
@@ -155,7 +156,7 @@
             // 
             this.Button_2_2.BackColor = System.Drawing.Color.AliceBlue;
             this.Button_2_2.Dock = System.Windows.Forms.DockStyle.Right;
-            this.Button_2_2.Font = new System.Drawing.Font("Malgun Gothic", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(129)));
+            this.Button_2_2.Font = new System.Drawing.Font("맑은 고딕", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(129)));
             this.Button_2_2.ForeColor = System.Drawing.Color.SteelBlue;
             this.Button_2_2.Location = new System.Drawing.Point(249, 0);
             this.Button_2_2.Name = "Button_2_2";
@@ -190,7 +191,7 @@
             // 
             this.HeadLabel.BackColor = System.Drawing.Color.Transparent;
             this.HeadLabel.Dock = System.Windows.Forms.DockStyle.Top;
-            this.HeadLabel.Font = new System.Drawing.Font("Malgun Gothic", 18F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(129)));
+            this.HeadLabel.Font = new System.Drawing.Font("맑은 고딕", 18F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(129)));
             this.HeadLabel.ForeColor = System.Drawing.SystemColors.ActiveCaption;
             this.HeadLabel.Location = new System.Drawing.Point(1, 1);
             this.HeadLabel.Name = "HeadLabel";
@@ -214,7 +215,7 @@
             // 
             this.Button_1_1.BackColor = System.Drawing.Color.AliceBlue;
             this.Button_1_1.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.Button_1_1.Font = new System.Drawing.Font("Malgun Gothic", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(129)));
+            this.Button_1_1.Font = new System.Drawing.Font("맑은 고딕", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(129)));
             this.Button_1_1.ForeColor = System.Drawing.Color.SteelBlue;
             this.Button_1_1.Location = new System.Drawing.Point(0, 0);
             this.Button_1_1.Name = "Button_1_1";
@@ -280,7 +281,7 @@
             // 
             this.Button_3_3.BackColor = System.Drawing.Color.AliceBlue;
             this.Button_3_3.Dock = System.Windows.Forms.DockStyle.Right;
-            this.Button_3_3.Font = new System.Drawing.Font("Malgun Gothic", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(129)));
+            this.Button_3_3.Font = new System.Drawing.Font("맑은 고딕", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(129)));
             this.Button_3_3.ForeColor = System.Drawing.Color.SteelBlue;
             this.Button_3_3.Location = new System.Drawing.Point(332, 0);
             this.Button_3_3.Name = "Button_3_3";
@@ -292,6 +293,11 @@
             this.Button_3_3.MouseEnter += new System.EventHandler(this.Button_MouseEnter);
             this.Button_3_3.MouseLeave += new System.EventHandler(this.Button_MouseLeave);
             this.Button_3_3.MouseUp += new System.Windows.Forms.MouseEventHandler(this.Button_MouseUp);
+            // 
+            // GameAuth
+            // 
+            this.GameAuth.Interval = 60000;
+            this.GameAuth.Tick += new System.EventHandler(this.GameAuth_Tick);
             // 
             // frmMain
             // 
@@ -310,7 +316,7 @@
             this.Controls.Add(this.UnitProgressBar_Background);
             this.Controls.Add(this.TopPanel);
             this.DoubleBuffered = true;
-            this.Font = new System.Drawing.Font("Malgun Gothic", 11.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(129)));
+            this.Font = new System.Drawing.Font("맑은 고딕", 11.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(129)));
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.None;
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Name = "frmMain";
@@ -349,6 +355,7 @@
         private System.Windows.Forms.Label Button_3_1;
         private System.Windows.Forms.Label Button_3_3;
         private System.Windows.Forms.Label Button_3_2;
+        private System.Windows.Forms.Timer GameAuth;
     }
 }
 

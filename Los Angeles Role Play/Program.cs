@@ -10,7 +10,7 @@ namespace Los_Angeles_Role_Play
 {
     static class Program
     {
-        public static bool TestMode = false;
+        public static bool TestMode = true;
         public static string InfowebURL = "http://la-rp.co.kr";
         public static string ForumURL = "http://la-rp.co.kr";
         public static string LauncherURL = "http://launcher.la-rp.co.kr";

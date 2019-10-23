@@ -1,9 +1,8 @@
 <?php
-require_once('security/encryption.inc');
+require_once('security/token.inc');
+/*$config = parse_ini_file('security/config.ini');
 
-$config = parse_ini_file('security/config.ini');
-
-$type = $_GET['type'];
+$type = $_POST['type'];
 if (strpos($type, '.') !== false || strpos($type, '/') !== false) {
     exit();
 } else {
@@ -11,5 +10,5 @@ if (strpos($type, '.') !== false || strpos($type, '/') !== false) {
     if (file_exists($tokenPublisher)) {
         require_once($tokenPublisher);
     }
-}
+}*/
 ?>

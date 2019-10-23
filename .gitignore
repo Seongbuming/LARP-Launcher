@@ -331,6 +331,7 @@ ASALocalRun/
 
 # Configs
 config.ini
+Config.cs
 
 # Security files
 security/
