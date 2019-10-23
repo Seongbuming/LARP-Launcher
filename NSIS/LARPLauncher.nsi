@@ -7,7 +7,7 @@
 !define PRODUCT_NAME "Los Angeles Role Play Launcher"
 !define PRODUCT_SHORT_NAME "LARPLauncher"
 !define PRODUCT_GROUP "Los Angeles Role Play"
-!define PRODUCT_VERSION "1.3"
+!define PRODUCT_VERSION "1.4"
 !define PRODUCT_PUBLISHER "Los Angeles Role Play"
 !define PRODUCT_WEBSITE "http://la-rp.co.kr"
 !define EXEFILE_NAME "LARPLauncher"
@@ -108,7 +108,7 @@ Section "!Base (required)"
     DetailPrint "설치 준비중..."
     SetDetailsPrint listonly
     SetOutPath "$INSTDIR"
-    File "LARPLauncher.exe"
+    File "..\Los Angeles Role Play\bin\Release\Confused\LARPLauncher.exe"
     ; 바탕화면에 바로가기 등록
     CreateShortCut "$DESKTOP\${EXELINK_NAME}.lnk" "$INSTDIR\${EXEFULL_NAME}"
     ; 시작-프로그램에 바로가기 등록
