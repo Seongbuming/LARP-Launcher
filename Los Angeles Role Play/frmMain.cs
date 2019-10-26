@@ -189,6 +189,8 @@ namespace Los_Angeles_Role_Play
                         alert("접속 인증 실패", false);
                     } else {
                         PercentageLabel.Text = "게임에 접속중입니다.";
+                        // IP 등록
+                        RegisterIP();
                         // SAMP 실행
                         StartedGamePath = GetGamePath();
                         Process.Start(Path.Combine(StartedGamePath, "samp.exe"), "server.la-rp.co.kr");
@@ -273,6 +275,20 @@ namespace Los_Angeles_Role_Play
         private void StartGame() {
             InitLevel = 1;
             GameStart.Start();
+        }
+
+        private void RegisterIP() {
+            Uri uri;
+            HttpWebRequest request;
+
+            try {
+                uri = new Uri(Program.InfowebURL + "/connect");
+                request = (HttpWebRequest)WebRequest.Create(uri);
+                request.CachePolicy = new HttpRequestCachePolicy(HttpRequestCacheLevel.NoCacheNoStore);
+                request.GetResponse();
+            } catch {
+                Debug.Print("IP 등록 중 오류 발생");
+            }
         }
 
         private bool GenerateToken(ref string receiver, string tokenurl, string type) {
