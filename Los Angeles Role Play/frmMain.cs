@@ -940,7 +940,7 @@ namespace Los_Angeles_Role_Play
         #endregion
 
         #region < 하드 디스크 일련번호 >
-        private string[] GetHDSerials() {
+        /*private string[] GetHDSerials() {
             ManagementObjectSearcher searcher = new ManagementObjectSearcher("SELECT * FROM Win32_PhysicalMedia");
 
             string[] serials = new string[searcher.Get().Count];
@@ -951,7 +951,7 @@ namespace Los_Angeles_Role_Play
             }
 
             return serials;
-        }
+        }*/
         #endregion
 
         #region  < 프로세스 > 
@@ -960,13 +960,13 @@ namespace Los_Angeles_Role_Play
             KillProcessesByName("gta_sa");
         }
 
-        private string GetCurrentProcessName() {
+        /*private string GetCurrentProcessName() {
             IntPtr handle = IntPtr.Zero;
             uint pid = 0;
             handle = GetForegroundWindow();
             GetWindowThreadProcessId(handle, out pid);
             return Process.GetProcessById((int)pid).ProcessName;
-        }
+        }*/
 
         private bool IsGameRunning() {
             foreach (Process proc in Process.GetProcessesByName("gta_sa")) {
@@ -976,11 +976,11 @@ namespace Los_Angeles_Role_Play
             return false;
         }
 
-        private bool IsProcessRunning(string pname) {
+        /*private bool IsProcessRunning(string pname) {
             if (Process.GetProcessesByName(pname).Length > 0)
                 return true;
             return false;
-        }
+        }*/
 
         private void KillProcessesByName(string pname) {
             foreach (Process process in Process.GetProcessesByName(pname))
