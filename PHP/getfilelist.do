@@ -1,10 +1,10 @@
 <?php
-$rpath = $_GET['type'];
+$rpath = 'home/'.$_GET['type'];
 $rarr = get_file_list($rpath);
 for($i = 0; $i < sizeof($rarr); $i++)
 {
 	$filename = substr($rarr[$i], strlen($rpath)+1);
-	$filehash = hash_file('md5', './'.$_GET['type'].'/'.$filename);
+	$filehash = hash_file('md5', './home/'.$_GET['type'].'/'.$filename);
 	echo str_replace('/','\\', $filename).','.$filehash;
 	if($i != sizeof($rarr)-1)
 		echo '|';
