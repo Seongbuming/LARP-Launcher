@@ -25,6 +25,7 @@ using System.Security.Cryptography;
 using Newtonsoft.Json.Linq;
 using LARPLauncher.Security;
 using System.Net.Cache;
+using LARPLauncher;
 
 namespace Los_Angeles_Role_Play
 {
@@ -359,7 +360,8 @@ namespace Los_Angeles_Role_Play
         #endregion
 
         #region < 하단 버튼 >
-        object focusedButton = null;
+        object FocusedButton = null;
+        Control AddonForm = null;
         private delegate void ButtonEvent();
 
         private void ShowButtons(int count) {
@@ -368,21 +370,31 @@ namespace Los_Angeles_Role_Play
                     ButtonContainer1.Visible = false;
                     ButtonContainer2.Visible = false;
                     ButtonContainer3.Visible = false;
+                    ButtonContainer4.Visible = false;
                     break;
                 case 1:
                     ButtonContainer1.Visible = true;
                     ButtonContainer2.Visible = false;
                     ButtonContainer3.Visible = false;
+                    ButtonContainer4.Visible = false;
                     break;
                 case 2:
                     ButtonContainer1.Visible = false;
                     ButtonContainer2.Visible = true;
                     ButtonContainer3.Visible = false;
+                    ButtonContainer4.Visible = false;
                     break;
                 case 3:
                     ButtonContainer1.Visible = false;
                     ButtonContainer2.Visible = false;
                     ButtonContainer3.Visible = true;
+                    ButtonContainer4.Visible = false;
+                    break;
+                case 4:
+                    ButtonContainer1.Visible = false;
+                    ButtonContainer2.Visible = false;
+                    ButtonContainer3.Visible = false;
+                    ButtonContainer4.Visible = true;
                     break;
                 default:
                     break;
@@ -404,13 +416,14 @@ namespace Los_Angeles_Role_Play
         }
 
         private void SetButtonsToDefault() {
-            Button_3_1.Text = "게임실행";
-            Button_3_2.Text = "닉네임 설정";
-            Button_3_3.Text = "종료";
-            SetButtonEvent(Button_3_1, ButtonEvent_GameStart);
-            SetButtonEvent(Button_3_2, ButtonEvent_SetNickname);
-            SetButtonEvent(Button_3_3, ButtonEvent_Exit);
-            ShowButtons(3);
+            Button_4_1.Text = "게임실행";
+            Button_4_2.Text = "닉네임 설정";
+            Button_4_3.Text = "종료";
+            SetButtonEvent(Button_4_1, ButtonEvent_GameStart);
+            SetButtonEvent(Button_4_2, ButtonEvent_SetNickname);
+            SetButtonEvent(Button_4_3, ButtonEvent_OpenAddonManager);
+            SetButtonEvent(Button_4_3, ButtonEvent_Exit);
+            ShowButtons(4);
         }
 
         private void ButtonEvent_Exit() {
@@ -434,6 +447,12 @@ namespace Los_Angeles_Role_Play
             Process.Start(path);
         }
 
+        private void ButtonEvent_OpenAddonManager() {
+            if (AddonForm == null)
+                AddonForm = new frmAddon();
+            AddonForm.Show();
+        }
+
         private void ButtonEvent_GameStart() {
             if (GetUsername().Length == 0) {
                 MessageBox.Show("닉네임을 설정하셔야 게임을 시작할 수 있습니다.");
@@ -450,13 +469,13 @@ namespace Los_Angeles_Role_Play
         }
 
         private void Button_MouseEnter(object sender, EventArgs e) {
-            focusedButton = sender;
+            FocusedButton = sender;
             ((Label)sender).BackColor = Color.SkyBlue;
             ((Label)sender).ForeColor = Color.White;
         }
 
         private void Button_MouseLeave(object sender, EventArgs e) {
-            focusedButton = null;
+            FocusedButton = null;
             ((Label)sender).BackColor = Color.AliceBlue;
             ((Label)sender).ForeColor = Color.SteelBlue;
         }
@@ -467,7 +486,7 @@ namespace Los_Angeles_Role_Play
         }
 
         private void Button_MouseUp(object sender, MouseEventArgs e) {
-            if (focusedButton == sender) {
+            if (FocusedButton == sender) {
                 ((Label)sender).BackColor = Color.SkyBlue;
                 ((Label)sender).ForeColor = Color.White;
             }

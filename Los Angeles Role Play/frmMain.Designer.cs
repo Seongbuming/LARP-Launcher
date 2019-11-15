@@ -54,11 +54,17 @@
             this.Button_3_1 = new System.Windows.Forms.Label();
             this.Button_3_3 = new System.Windows.Forms.Label();
             this.GameAuth = new System.Windows.Forms.Timer(this.components);
+            this.ButtonContainer4 = new System.Windows.Forms.Panel();
+            this.Button_4_1 = new System.Windows.Forms.Label();
+            this.Button_4_2 = new System.Windows.Forms.Label();
+            this.Button_4_4 = new System.Windows.Forms.Label();
+            this.Button_4_3 = new System.Windows.Forms.Label();
             this.UnitProgressBar_Background.SuspendLayout();
             this.TotalProgressBar_Background.SuspendLayout();
             this.ButtonContainer2.SuspendLayout();
             this.ButtonContainer1.SuspendLayout();
             this.ButtonContainer3.SuspendLayout();
+            this.ButtonContainer4.SuspendLayout();
             this.SuspendLayout();
             // 
             // UnitProgressBar_Background
@@ -299,11 +305,66 @@
             this.GameAuth.Interval = 60000;
             this.GameAuth.Tick += new System.EventHandler(this.GameAuth_Tick);
             // 
+            // ButtonContainer4
+            // 
+            this.ButtonContainer4.Controls.Add(this.Button_4_3);
+            this.ButtonContainer4.Controls.Add(this.Button_4_1);
+            this.ButtonContainer4.Controls.Add(this.Button_4_2);
+            this.ButtonContainer4.Controls.Add(this.Button_4_4);
+            this.ButtonContainer4.Location = new System.Drawing.Point(1, 174);
+            this.ButtonContainer4.Name = "ButtonContainer4";
+            this.ButtonContainer4.Size = new System.Drawing.Size(498, 35);
+            this.ButtonContainer4.TabIndex = 11;
+            this.ButtonContainer4.Visible = false;
+            // 
+            // Button_4_1
+            // 
+            this.Button_4_1.BackColor = System.Drawing.Color.AliceBlue;
+            this.Button_4_1.ForeColor = System.Drawing.Color.SteelBlue;
+            this.Button_4_1.Location = new System.Drawing.Point(0, 0);
+            this.Button_4_1.Name = "Button_4_1";
+            this.Button_4_1.Size = new System.Drawing.Size(125, 35);
+            this.Button_4_1.TabIndex = 9;
+            this.Button_4_1.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+            // 
+            // Button_4_2
+            // 
+            this.Button_4_2.BackColor = System.Drawing.Color.AliceBlue;
+            this.Button_4_2.ForeColor = System.Drawing.Color.SteelBlue;
+            this.Button_4_2.Location = new System.Drawing.Point(125, 0);
+            this.Button_4_2.Name = "Button_4_2";
+            this.Button_4_2.Size = new System.Drawing.Size(125, 35);
+            this.Button_4_2.TabIndex = 8;
+            this.Button_4_2.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+            // 
+            // Button_4_4
+            // 
+            this.Button_4_4.BackColor = System.Drawing.Color.AliceBlue;
+            this.Button_4_4.Font = new System.Drawing.Font("맑은 고딕", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(129)));
+            this.Button_4_4.ForeColor = System.Drawing.Color.SteelBlue;
+            this.Button_4_4.Location = new System.Drawing.Point(375, 0);
+            this.Button_4_4.Name = "Button_4_4";
+            this.Button_4_4.Size = new System.Drawing.Size(125, 35);
+            this.Button_4_4.TabIndex = 11;
+            this.Button_4_4.Text = "종료";
+            this.Button_4_4.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+            // 
+            // Button_4_3
+            // 
+            this.Button_4_3.BackColor = System.Drawing.Color.AliceBlue;
+            this.Button_4_3.ForeColor = System.Drawing.Color.SteelBlue;
+            this.Button_4_3.Location = new System.Drawing.Point(250, 0);
+            this.Button_4_3.Name = "Button_4_3";
+            this.Button_4_3.Size = new System.Drawing.Size(125, 35);
+            this.Button_4_3.TabIndex = 10;
+            this.Button_4_3.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+            // 
             // frmMain
             // 
             this.BackColor = System.Drawing.Color.White;
             this.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
             this.ClientSize = new System.Drawing.Size(500, 210);
+            this.Controls.Add(this.ButtonContainer4);
             this.Controls.Add(this.ButtonContainer1);
             this.Controls.Add(this.ButtonContainer2);
             this.Controls.Add(this.ButtonContainer3);
@@ -327,6 +388,7 @@
             this.ButtonContainer2.ResumeLayout(false);
             this.ButtonContainer1.ResumeLayout(false);
             this.ButtonContainer3.ResumeLayout(false);
+            this.ButtonContainer4.ResumeLayout(false);
             this.ResumeLayout(false);
 
         }
@@ -356,6 +418,11 @@
         private System.Windows.Forms.Label Button_3_3;
         private System.Windows.Forms.Label Button_3_2;
         private System.Windows.Forms.Timer GameAuth;
+        private System.Windows.Forms.Panel ButtonContainer4;
+        private System.Windows.Forms.Label Button_4_3;
+        private System.Windows.Forms.Label Button_4_1;
+        private System.Windows.Forms.Label Button_4_2;
+        private System.Windows.Forms.Label Button_4_4;
     }
 }
 
